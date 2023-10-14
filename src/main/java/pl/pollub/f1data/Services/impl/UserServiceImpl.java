@@ -1,6 +1,7 @@
 package pl.pollub.f1data.Services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.pollub.f1data.Exceptions.EmailExistsException;
@@ -53,8 +54,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<List<User>> GetUsers() {
-        return Optional.empty();
+    @Async
+    public CompletableFuture<List<User>> GetUsers() {
+        List<User> users = userRepository.findAll();
+        return CompletableFuture.completedFuture(users);
     }
 
     @Override

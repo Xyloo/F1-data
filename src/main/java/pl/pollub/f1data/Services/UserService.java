@@ -9,6 +9,6 @@ public interface UserService {
     CompletableFuture<Optional<User>> createUser(User userData);
     String GenerateToken(User user);
     Optional<User> GetUserByUsername(String username);
-    Optional<List<User>> GetUsers();
+    CompletableFuture<List<User>> GetUsers();
     boolean VerifyPassword(User user, String providedPassword);
 }
