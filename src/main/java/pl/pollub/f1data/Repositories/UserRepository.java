@@ -7,17 +7,12 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    User createUser(User user);
-
-    void deleteUser(int id);
-
-    Optional<User> getUser(int id);
+   /* Optional<User> getUser(int id);
 
     Optional<User> getUserByUsername(String username);
 
     Optional<User> getUserByEmail(String email);
 
-    List<User> getUsers();
+    List<User> getUsers();*/
 
-    User updateUser(User user);
 }

@@ -17,7 +17,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> CreateUser(User user) {
-        return Optional.empty();
+        User savedUser = userRepository.save(user);  // Use the save method to create the user
+        return Optional.ofNullable(savedUser);
     }
 
     @Override

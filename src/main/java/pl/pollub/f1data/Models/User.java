@@ -1,9 +1,6 @@
 package pl.pollub.f1data.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
@@ -13,11 +10,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Table(name = "users")
 @NoArgsConstructor  // Lombok annotation to generate a no-args constructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NotNull
