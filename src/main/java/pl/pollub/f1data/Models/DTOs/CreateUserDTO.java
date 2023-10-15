@@ -18,6 +18,6 @@ public class CreateUserDTO {
     private String username;
     @NotNull @Email
     private String email;
-    @NotNull @Max(32)
+    @NotNull @Max(100)
     public String password;
 }
