@@ -6,18 +6,17 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Table(name="roles")
 @NoArgsConstructor
 public class Role {
 
     @Id
-    @Setter(AccessLevel.PROTECTED)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    @Setter
     @NotNull
     private ERole name;
 
