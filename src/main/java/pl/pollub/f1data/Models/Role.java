@@ -7,7 +7,9 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@Table(name="roles")
+@Table(name="roles", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+})
 @NoArgsConstructor
 public class Role {
 

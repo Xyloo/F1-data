@@ -1,23 +1,23 @@
 package pl.pollub.f1data.Models.DTOs;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class CreateUserDTO {
-    @NotNull @Max(32)
+    @NotBlank
+    @Size(min =3, max = 32)
     private String username;
-    @NotNull @Email
+    @NotBlank
+    @Size(max = 100)
+    @Email
     private String email;
-    @NotNull @Max(100)
-    public String password;
+    @NotBlank
+    @Size(min=6, max=100)
+    private String password;
 }

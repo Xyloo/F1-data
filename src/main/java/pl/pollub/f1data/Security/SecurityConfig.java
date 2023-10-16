@@ -51,11 +51,12 @@ public class SecurityConfig{
         http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
+                        auth.requestMatchers("/api/auth/**").anonymous()
                                 .requestMatchers("/api/test/**").permitAll()
                                 .requestMatchers("/swagger-ui/**").anonymous()
                                 .requestMatchers("/v3/api-docs/**").anonymous()
-                                .anyRequest().authenticated());
+                                .anyRequest().anonymous())
+                        .csrf(csrf-> csrf.ignoringRequestMatchers(request -> request.getRequestURI().startsWith("/api/auth") && request.getMethod().equals("POST")));
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
