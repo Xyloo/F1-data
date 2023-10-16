@@ -1,6 +1,7 @@
 package pl.pollub.f1data.Models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -32,6 +33,7 @@ public class User {
 
     @NotBlank
     @Size(max = 50)
+    @Email
     private String email;
 
     @NotBlank
