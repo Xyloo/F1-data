@@ -6,7 +6,7 @@ import pl.pollub.f1data.Models.User;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     @Async
     CompletableFuture<Optional<User>> getUserByUsername(String username);
