@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserService extends UserDetailsService {
-    Optional<UserDetails> GetUserByUsername(String username);
+    CompletableFuture<Optional<UserDetails>> GetUserByUsername(String username);
     CompletableFuture<List<User>> GetUsers();
+    CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId, Long requestUserId);
 }

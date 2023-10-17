@@ -1,15 +1,19 @@
 package pl.pollub.f1data.Services.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import pl.pollub.f1data.Models.ERole;
 import pl.pollub.f1data.Models.User;
 import pl.pollub.f1data.Repositories.UserRepository;
 import pl.pollub.f1data.Services.UserService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,28 +22,55 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Override
-    public Optional<UserDetails> GetUserByUsername(String username) {
+    @Async
+    public CompletableFuture<Optional<UserDetails>> GetUserByUsername(String username) {
         User user = userRepository.getUserByUsername(username).join().orElse(null);
         if (user == null) {
-            return Optional.empty();
+            return CompletableFuture.completedFuture(Optional.empty());
         }
-        return Optional.of(UserDetailsImpl.build(user));
+        return CompletableFuture.completedFuture(Optional.of(UserDetailsImpl.build(user)));
     }
-
     @Override
     @Async
     public CompletableFuture<List<User>> GetUsers() {
         List<User> users = userRepository.findAll();
         return CompletableFuture.completedFuture(users);
     }
+    @Override
+    @Async
+    public CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId, Long requestUserId) {
+        User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
+        User requestUser = userRepository.getUserById(requestUserId).join().orElse(null);
 
+        if (user == null) {
+            try {
+                user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
+            } catch (NumberFormatException ignored) {
+            }
+            if (user == null) {
+                return CompletableFuture.completedFuture(Optional.empty());
+            }
+        }
+
+        //basically - return email only when user is admin or when user is requesting his own data
+        if(requestUser == null){
+            user.setEmail(null);
+            return CompletableFuture.completedFuture(Optional.of(user));
+        }
+        if (!Objects.equals(user.getId(), requestUser.getId()) && requestUser.getRoles().stream().noneMatch(role -> role.getName().equals(ERole.ROLE_ADMIN))){
+            user.setEmail(null);
+        }
+        return CompletableFuture.completedFuture(Optional.of(user));
+    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserDetails> user = GetUserByUsername(username);
-        if (user.isEmpty()) {
+        User user = userRepository.getUserByUsername(username).join().orElse(null);
+        if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        return user.get();
+        return UserDetailsImpl.build(user);
     }
 }

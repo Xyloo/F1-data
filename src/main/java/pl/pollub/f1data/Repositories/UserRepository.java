@@ -14,10 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Async
     CompletableFuture<Optional<User>> getUserByEmail(String email);
 
-   /* Optional<User> getUser(int id);
-
-    Optional<User> getUserByEmail(String email);
-
-    List<User> getUsers();*/
+    @Async
+    CompletableFuture<Optional<User>> getUserById(Long id);
 
 }
