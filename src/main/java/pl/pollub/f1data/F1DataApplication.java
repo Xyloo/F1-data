@@ -7,12 +7,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import pl.pollub.f1data.Models.ERole;
 import pl.pollub.f1data.Models.Role;
+import pl.pollub.f1data.Models.User;
 import pl.pollub.f1data.Repositories.RoleRepository;
+import pl.pollub.f1data.Repositories.UserRepository;
+
+import java.util.HashSet;
 
 @SpringBootApplication
 public class F1DataApplication {
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(F1DataApplication.class, args);
@@ -27,6 +34,19 @@ public class F1DataApplication {
             }
             if(roleRepository.getRoleByName(ERole.ROLE_ADMIN).get().isEmpty()) {
                 roleRepository.save(new Role(ERole.ROLE_ADMIN));
+            }
+
+            if(userRepository.getUserByUsername("testAdmin").get().isEmpty()) {
+                User u = new User("testAdmin", "admin@f1-data.com", "admin");
+                u.setRoles(new HashSet<>(roleRepository.findAll()));
+                userRepository.save(u);
+            }
+
+            if(userRepository.getUserByUsername("testUser").get().isEmpty()) {
+                User u = new User("testUser", "user@f1-data.com", "user");
+                u.setRoles(new HashSet<>());
+                u.getRoles().add(roleRepository.getRoleByName(ERole.ROLE_USER).get().get());
+                userRepository.save(u);
             }
         };
     }
