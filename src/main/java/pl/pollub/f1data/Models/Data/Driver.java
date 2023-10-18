@@ -13,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "drivers", indexes = {
+@Table(name = "drivers", schema = "f1datadb", indexes = {
         @Index(name = "url", columnList = "url", unique = true)
 })
 public class Driver {

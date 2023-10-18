@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "laptimes", indexes = {
+@Table(name = "laptimes", schema = "f1datadb", indexes = {
         @Index(name = "raceId", columnList = "raceId"),
         @Index(name = "raceId_2", columnList = "raceId")
 })

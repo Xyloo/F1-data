@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "status")
+@Table(name = "status", schema = "f1datadb")
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

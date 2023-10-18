@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "races", indexes = {
+@Table(name = "races", schema = "f1datadb", indexes = {
         @Index(name = "url", columnList = "url", unique = true)
 })
 public class Race {

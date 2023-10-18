@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "pitstops", indexes = {
+@Table(name = "pitstops", schema = "f1datadb", indexes = {
         @Index(name = "raceId", columnList = "raceId")
 })
 public class Pitstop {

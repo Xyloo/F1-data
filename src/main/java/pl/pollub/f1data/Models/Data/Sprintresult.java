@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "sprintresults", indexes = {
+@Table(name = "sprintresults", schema = "f1datadb", indexes = {
         @Index(name = "raceId", columnList = "raceId")
 })
 public class Sprintresult {

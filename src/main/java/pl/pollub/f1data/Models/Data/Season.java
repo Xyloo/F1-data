@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "seasons", indexes = {
+@Table(name = "seasons", schema = "f1datadb", indexes = {
         @Index(name = "url", columnList = "url", unique = true)
 })
 public class Season {
