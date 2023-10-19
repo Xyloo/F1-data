@@ -50,12 +50,11 @@ public class SecurityConfig{
     SecurityFilterChain web(HttpSecurity http) throws Exception {
         http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").anonymous()
-                                .requestMatchers("/api/test/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").anonymous()
-                                .requestMatchers("/v3/api-docs/**").anonymous()
-                                .anyRequest().anonymous())
+                .authorizeHttpRequests(authorize -> authorize
+                        .dispatcherTypeMatchers().permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll()
+                )
                         .csrf(csrf-> csrf.ignoringRequestMatchers(request -> request.getRequestURI().startsWith("/api/auth") && request.getMethod().equals("POST")));
 
         http.authenticationProvider(authenticationProvider());

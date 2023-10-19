@@ -2,6 +2,7 @@ package pl.pollub.f1data.Models.DTOs;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 public class CreateUserDTO {
     @NotBlank
     @Size(min =3, max = 32)
+    @Pattern(regexp = "^[a-zA-Z0-9-_]*$", message = "Username can only contain letters, numbers, dashes and underscores.")
     private String username;
     @NotBlank
     @Size(max = 100)
