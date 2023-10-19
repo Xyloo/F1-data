@@ -1,0 +1,46 @@
+package pl.pollub.f1data.Models.Data;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.Hibernate;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Embeddable
+public class LaptimeId implements Serializable {
+    private static final long serialVersionUID = -2364716918661651712L;
+    @NotNull
+    @Column(name = "raceId", nullable = false)
+    private Integer raceId;
+
+    @NotNull
+    @Column(name = "driverId", nullable = false)
+    private Integer driverId;
+
+    @NotNull
+    @Column(name = "lap", nullable = false)
+    private Integer lap;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        LaptimeId entity = (LaptimeId) o;
+        return Objects.equals(this.raceId, entity.raceId) &&
+                Objects.equals(this.driverId, entity.driverId) &&
+                Objects.equals(this.lap, entity.lap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(raceId, driverId, lap);
+    }
+
+}
