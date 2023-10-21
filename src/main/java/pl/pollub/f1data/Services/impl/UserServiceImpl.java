@@ -1,5 +1,6 @@
 package pl.pollub.f1data.Services.impl;
 
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,16 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Async
+    public CompletableFuture<Optional<UserDetails>> GetUserById(Long id) {
+        User user = userRepository.getUserById(id).join().orElse(null);
+        if (user == null) {
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
+        return CompletableFuture.completedFuture(Optional.of(UserDetailsImpl.build(user)));
+    }
+
+    @Override
+    @Async
     public CompletableFuture<List<User>> GetUsers() {
         List<User> users = userRepository.findAll();
         return CompletableFuture.completedFuture(users);
@@ -65,6 +76,24 @@ public class UserServiceImpl implements UserService {
         }
         return CompletableFuture.completedFuture(Optional.of(user));
     }
+
+    @Override
+    @Async
+    //this should be used only by admins
+    public CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId) {
+        User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
+
+        if (user == null) {
+            try {
+                user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
+            } catch (NumberFormatException ignored) {
+            }
+            if (user == null) {
+                return CompletableFuture.completedFuture(Optional.empty());
+            }
+        }
+        return CompletableFuture.completedFuture(Optional.of(user));
+    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.getUserByUsername(username).join().orElse(null);
@@ -72,5 +101,17 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
         return UserDetailsImpl.build(user);
+    }
+
+    @Override
+    @Async
+    //we assume new user data is valid
+    public CompletableFuture<Optional<User>> UpdateUser(User user) {
+        User userToUpdate = userRepository.getUserById(user.getId()).join().orElse(null);
+        if(userToUpdate == null) {
+            return CompletableFuture.completedFuture(Optional.empty());
+        }
+        userRepository.save(userToUpdate);
+        return CompletableFuture.completedFuture(Optional.of(userToUpdate));
     }
 }
