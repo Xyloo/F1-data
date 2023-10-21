@@ -9,8 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.pollub.f1data.Mappers.AutoMapper;
 import pl.pollub.f1data.Models.DTOs.DriverDto;
 import pl.pollub.f1data.Models.Data.Driver;
-import pl.pollub.f1data.Repositories.F1Database.DriverRepository;
-import pl.pollub.f1data.Services.DriverService;
+import pl.pollub.f1data.Models.MessageResponse;
 import pl.pollub.f1data.Services.impl.DriverServiceImpl;
 
 import java.net.URI;
@@ -39,7 +38,7 @@ public class DriverController {
             return ResponseEntity.ok(driverOptional.get());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Driver with ID " + id + " not found");
+                    .body(new MessageResponse("Driver with ID " + id + " not found"));
         }
     }
 
