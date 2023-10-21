@@ -2,7 +2,11 @@ package pl.pollub.f1data.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
+import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
 import pl.pollub.f1data.Services.RaceService;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/race")
@@ -12,10 +16,10 @@ public class RacingController {
     RaceService raceService;
 
     @GetMapping("/{raceId}/best-time")
-    public ResponseEntity<String> getBestRaceTime(@PathVariable Integer raceId) {
-        String bestTime = raceService.getBestRaceTimeByRaceId(raceId);
+    public ResponseEntity<DriverBestTimeDto> getBestRaceTime(@PathVariable Integer raceId) {
+        Optional<DriverBestTimeDto> bestTime = raceService.getBestRaceTimeByRaceId(raceId);
         if (bestTime != null) {
-            return ResponseEntity.ok(bestTime);
+            return ResponseEntity.ok(bestTime.get());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -35,6 +39,18 @@ public class RacingController {
     public ResponseEntity<?> getPitstopsCountByLapForRace(@PathVariable Integer raceId) {
         return ResponseEntity.ok(raceService.getPitstopsCountByLapForRace(raceId));
     }
+
+    @GetMapping("/{circuitId}/summary/best-times")
+    public ResponseEntity<CircuitSummaryDto> getBestRaceTimesByCircuit(@PathVariable Integer circuitId) {
+        CircuitSummaryDto circuitSummary = raceService.getBestRaceTimesByCircuitId(circuitId);
+        if (circuitSummary != null) {
+            return ResponseEntity.ok(circuitSummary);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
 
 }

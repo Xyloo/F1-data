@@ -2,11 +2,14 @@ package pl.pollub.f1data.Services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
+import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
+import pl.pollub.f1data.Models.DTOs.RaceSummaryDto;
+import pl.pollub.f1data.Models.Data.Circuit;
 import pl.pollub.f1data.Models.Data.Laptime;
+import pl.pollub.f1data.Models.Data.Race;
 import pl.pollub.f1data.Models.Data.Result;
-import pl.pollub.f1data.Repositories.F1Database.LaptimeRepository;
-import pl.pollub.f1data.Repositories.F1Database.PitstopRepository;
-import pl.pollub.f1data.Repositories.F1Database.ResultRepository;
+import pl.pollub.f1data.Repositories.F1Database.*;
 import pl.pollub.f1data.Services.RaceService;
 
 import java.sql.Time;
@@ -26,10 +29,24 @@ public class RaceServiceImpl implements RaceService {
     private PitstopRepository pitstopRepository;
     @Autowired
     private LaptimeRepository laptimeRepository;
+    @Autowired
+    private CircuitRepository circuitRepository;
+    @Autowired
+    private RaceRepository raceRepository;
 
-    public String getBestRaceTimeByRaceId(Integer raceId) {
-        Optional<Result> bestResult = resultRepository.findTopByRaceIdOrderByTimeAsc(raceId);
-        return bestResult != null ? bestResult.get().getFastestLapTime() : "";
+
+
+    public Optional<DriverBestTimeDto> getBestRaceTimeByRaceId(Integer raceId) {
+        Optional<Result> bestResult = resultRepository.findFastestLapByRaceId(raceId);
+        if(bestResult.isEmpty()) return Optional.empty();
+
+        DriverBestTimeDto driverBestTimeDto = new DriverBestTimeDto(
+                bestResult.get().getDriver().getForename(),
+                bestResult.get().getDriver().getSurname(),
+                bestResult.get().getDriver().getNumber(),
+                bestResult.get().getFastestLapTime()
+        );
+        return Optional.of(driverBestTimeDto);
     }
 
     @Override
@@ -55,5 +72,20 @@ public class RaceServiceImpl implements RaceService {
         return resultMap;
     }
 
+    @Override
+    public CircuitSummaryDto getBestRaceTimesByCircuitId(Integer circuitId) {
+        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
+        if(circuit.isEmpty()) return null;
 
+        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
+
+        for (Race race : raceList) {
+            Optional<DriverBestTimeDto> driverDto =  getBestRaceTimeByRaceId(race.getId());
+            RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
+            raceDto.setBestLapTime(driverDto.orElse(null)); //or new object?
+            circuitSummaryDto.races.add(raceDto);
+        }
+        return circuitSummaryDto;
+    }
 }
