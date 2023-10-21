@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import pl.pollub.f1data.Models.MessageResponse;
 import pl.pollub.f1data.Models.User;
 import pl.pollub.f1data.Services.UserService;
 import pl.pollub.f1data.Services.impl.UserDetailsImpl;
@@ -33,9 +34,9 @@ public class UserController {
     public ResponseEntity<?> getUsers() {
         List<User> users = userService.GetUsers().join();
         if(users == null)
-            return ResponseEntity.badRequest().body("Could not get users.");
+            return ResponseEntity.badRequest().body(new MessageResponse("Could not get users."));
         if(users.isEmpty())
-            return ResponseEntity.ok("No users found.");
+            return ResponseEntity.ok(new MessageResponse("No users found."));
         return ResponseEntity.ok(users);
     }
 
@@ -44,7 +45,7 @@ public class UserController {
      * @param id - can be either id or username
      * @param requestingUser - user that is requesting the data, added by Spring Security
      * @return HTTP 200 with user data if user is found, otherwise error message with HTTP 400
-     * @apiNote This endpoint is public, so it can be accessed without logging in. It returns data of an user with given id or username. Email is only returned if user is requesting his own data or an admin is requesting the data.
+     * @apiNote This endpoint is public, so it can be accessed without logging in. It returns data of a user with given id or username. Email is only returned if user is requesting his own data or an admin is requesting the data.
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserByIdOrUsername(@PathVariable String id, @AuthenticationPrincipal UserDetailsImpl requestingUser) {
@@ -52,7 +53,7 @@ public class UserController {
         Long requestingUserId = requestingUser != null ? requestingUser.getId() : null;
         User user = userService.GetUserByIdOrUsername(id, requestingUserId).join().orElse(null);
         if(user == null)
-            return ResponseEntity.badRequest().body("No user found with id or username " + id + ".");
+            return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + id + "."));
         return ResponseEntity.ok(user);
     }
 
@@ -65,10 +66,10 @@ public class UserController {
     public ResponseEntity<?> getMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {
         Long userId = requestingUser != null ? requestingUser.getId() : null;
         if(userId == null)
-            return ResponseEntity.badRequest().body("User not logged in.");
+            return ResponseEntity.badRequest().body(new MessageResponse("User not logged in."));
         User user = userService.GetUserByIdOrUsername(userId.toString()).join().orElse(null);
         if(user == null)
-            return ResponseEntity.badRequest().body("No user found with id or username " + userId + ".");
+            return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + userId + "."));
         return ResponseEntity.ok(user);
     }
 
@@ -83,7 +84,7 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User newUser) {
         User userToUpdate = userService.GetUserByIdOrUsername(id).join().orElse(null);
         if(userToUpdate == null)
-            return ResponseEntity.badRequest().body("No user found with id or username " + id + ".");
+            return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + id + "."));
         if(newUser.getUsername() != null)
             userToUpdate.setUsername(newUser.getUsername());
         if(newUser.getEmail() != null)
@@ -94,8 +95,8 @@ public class UserController {
             userToUpdate.setRoles(newUser.getRoles());
         User result = userService.UpdateUser(userToUpdate).join().orElse(null);
         if(result == null)
-            return ResponseEntity.badRequest().body("Could not update user. Check if data is valid.");
-        return ResponseEntity.ok("User updated successfully.");
+            return ResponseEntity.badRequest().body(new MessageResponse("Could not update user. Check if data is valid."));
+        return ResponseEntity.ok(new MessageResponse("User updated successfully."));
     }
 
     /**
@@ -108,7 +109,7 @@ public class UserController {
     public ResponseEntity<?> updateMe(@RequestBody User newUser, @AuthenticationPrincipal UserDetailsImpl requestingUser) {
         Long userId = requestingUser != null ? requestingUser.getId() : null;
         if(userId == null)
-            return ResponseEntity.badRequest().body("User not logged in.");
+            return ResponseEntity.badRequest().body(new MessageResponse("User not logged in."));
         return updateUser(userId.toString(), newUser);
     }
 
@@ -122,7 +123,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         User userToDelete = userService.GetUserByIdOrUsername(id).join().orElse(null);
         if(userToDelete == null)
-            return ResponseEntity.badRequest().body("No user found with id or username " + id + ".");
+            return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + id + "."));
         return userService.DeleteUser(userToDelete.getId()).join();
     }
 
@@ -135,7 +136,7 @@ public class UserController {
     public ResponseEntity<?> deleteMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {
         Long userId = requestingUser != null ? requestingUser.getId() : null;
         if(userId == null)
-            return ResponseEntity.badRequest().body("User not logged in.");
+            return ResponseEntity.badRequest().body(new MessageResponse("User not logged in."));
         return deleteUser(userId.toString());
     }
 

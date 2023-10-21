@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,6 +15,7 @@ import pl.pollub.f1data.Exceptions.EmailExistsException;
 import pl.pollub.f1data.Exceptions.InvalidPasswordException;
 import pl.pollub.f1data.Exceptions.UserNotFoundException;
 import pl.pollub.f1data.Exceptions.UsernameExistsException;
+import pl.pollub.f1data.Models.MessageResponse;
 
 import java.nio.file.AccessDeniedException;
 
@@ -22,26 +24,26 @@ public class UserControllerAdvices {
 
     @ExceptionHandler(EmailExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleEmailExistsException(EmailExistsException ex) {
-        return ex.getMessage();
+    public ResponseEntity<?>  handleEmailExistsException(EmailExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ex.getMessage();
+    public ResponseEntity<?>  handleInvalidPasswordException(InvalidPasswordException ex) {
+        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(UsernameExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleUsernameExistsException(UsernameExistsException ex) {
-        return ex.getMessage();
+    public ResponseEntity<?>  handleUsernameExistsException(UsernameExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleUserNotFoundException(UserNotFoundException ex) {
-        return ex.getMessage();
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?>  handleUserNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(TransactionSystemException.class)
@@ -53,27 +55,39 @@ public class UserControllerAdvices {
             for (ConstraintViolation<?> violation : ((ConstraintViolationException) cause).getConstraintViolations()) {
                 message.append(violation.getMessage()).append('\n');
             }
-            return ResponseEntity.badRequest().body("Error: " + message);
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: " + message));
         }
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        return ResponseEntity.badRequest().body("Error: Duplicate entry. Username or email already exists.");
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: Duplicate entry. Username or email already exists."));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error: Access denied.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("Error: Access denied."));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Username and/or password are incorrect.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Error: Username and/or password are incorrect."));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getBindingResult().getFieldError().getDefaultMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<?> handleException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
 }
