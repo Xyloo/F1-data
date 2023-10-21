@@ -1,5 +1,7 @@
 package pl.pollub.f1data.Models.Data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -56,21 +58,27 @@ public class Driver {
     @Column(name = "url", nullable = false)
     private String url;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "driver")
     private Set<Driverstanding> driverstandings = new LinkedHashSet<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "driver")
     private Set<Laptime> laptimes = new LinkedHashSet<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "driver")
     private Set<Pitstop> pitstops = new LinkedHashSet<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "driver")
     private Set<Qualifying> qualifyings = new LinkedHashSet<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "driver")
     private Set<Result> results = new LinkedHashSet<>();
 
+    @JsonBackReference
     @OneToMany(mappedBy = "driver")
     private Set<Sprintresult> sprintresults = new LinkedHashSet<>();
 
