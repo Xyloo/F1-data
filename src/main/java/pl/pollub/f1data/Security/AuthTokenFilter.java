@@ -29,7 +29,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        if(request.getRequestURI().startsWith("/api/auth") && request.getMethod().equals("POST")) {
+        //don't check for token when:
+        //signing in
+        //creating a new account
+        //requesting a new password
+        if(     (request.getRequestURI().equals("/api/auth/password-reset") ||
+                request.getRequestURI().equals("/api/auth/signin") ||
+                request.getRequestURI().equals("api/auth/signup")) && request.getMethod().equals("POST")) {
             filterChain.doFilter(request, response);
             return;
         }

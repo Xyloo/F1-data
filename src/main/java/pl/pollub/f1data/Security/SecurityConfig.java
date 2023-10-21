@@ -48,6 +48,11 @@ public class SecurityConfig{
     }
     @Bean
     SecurityFilterChain web(HttpSecurity http) throws Exception {
+//        CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+//        XorCsrfTokenRequestAttributeHandler delegate = new XorCsrfTokenRequestAttributeHandler();
+//        delegate.setCsrfRequestAttributeName("_csrf");
+//        CsrfTokenRequestHandler requestHandler = delegate;
+
         http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
@@ -55,8 +60,14 @@ public class SecurityConfig{
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-                        .csrf(csrf-> csrf.ignoringRequestMatchers(request -> request.getRequestURI().startsWith("/api/auth") && request.getMethod().equals("POST")));
-
+                        .csrf(csrf -> csrf.disable());
+                /*
+                .csrf(csrf-> csrf.ignoringRequestMatchers(request -> request
+                        .getRequestURI().startsWith("/api/auth/sign") && request.getMethod().equals("POST"))
+                        .csrfTokenRepository(csrfTokenRepository)
+                        .csrfTokenRequestHandler(requestHandler)
+                )
+                it really doesn't want to work */
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
