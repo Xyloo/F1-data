@@ -14,6 +14,8 @@ import pl.pollub.f1data.Exceptions.InvalidPasswordException;
 import pl.pollub.f1data.Exceptions.UserNotFoundException;
 import pl.pollub.f1data.Exceptions.UsernameExistsException;
 
+import java.nio.file.AccessDeniedException;
+
 @ControllerAdvice
 public class UserControllerAdvices {
 
@@ -50,7 +52,7 @@ public class UserControllerAdvices {
             for (ConstraintViolation<?> violation : ((ConstraintViolationException) cause).getConstraintViolations()) {
                 message.append(violation.getMessage()).append('\n');
             }
-            return ResponseEntity.badRequest().body("Error: " + message.toString());
+            return ResponseEntity.badRequest().body("Error: " + message);
         }
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
@@ -59,6 +61,12 @@ public class UserControllerAdvices {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         return ResponseEntity.badRequest().body("Error: Duplicate entry. Username or email already exists.");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error: Access denied.");
     }
 
 }

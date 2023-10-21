@@ -1,24 +1,18 @@
 package pl.pollub.f1data.Controllers;
 
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.f1data.Models.User;
 import pl.pollub.f1data.Services.UserService;
 import pl.pollub.f1data.Services.impl.UserDetailsImpl;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -116,6 +110,23 @@ public class UserController {
         if(userId == null)
             return ResponseEntity.badRequest().body("User not logged in.");
         return updateUser(userId.toString(), newUser);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        User userToDelete = userService.GetUserByIdOrUsername(id).join().orElse(null);
+        if(userToDelete == null)
+            return ResponseEntity.badRequest().body("No user found with id or username " + id + ".");
+        return userService.DeleteUser(userToDelete.getId()).join();
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {
+        Long userId = requestingUser != null ? requestingUser.getId() : null;
+        if(userId == null)
+            return ResponseEntity.badRequest().body("User not logged in.");
+        return deleteUser(userId.toString());
     }
 
 }

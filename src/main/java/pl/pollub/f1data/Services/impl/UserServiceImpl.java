@@ -1,9 +1,9 @@
 package pl.pollub.f1data.Services.impl;
 
-import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -113,5 +113,16 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.save(userToUpdate);
         return CompletableFuture.completedFuture(Optional.of(userToUpdate));
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<ResponseEntity<?>> DeleteUser(Long id) {
+        User user = userRepository.getUserById(id).join().orElse(null);
+        if(user == null) {
+            return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("User not found."));
+        }
+        userRepository.delete(user);
+        return CompletableFuture.completedFuture(ResponseEntity.ok("User deleted successfully."));
     }
 }
