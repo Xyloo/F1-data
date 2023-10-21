@@ -112,6 +112,11 @@ public class UserController {
         return updateUser(userId.toString(), newUser);
     }
 
+    /**
+     * @param id - can be either id or username
+     * @return HTTP 200 with message if user is found and delete was successful, otherwise error if user was not found
+     * @apiNote This endpoint is only accessible by users with ADMIN role. It deletes a user (anyone, including themselves) with given id or username.
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
@@ -121,6 +126,11 @@ public class UserController {
         return userService.DeleteUser(userToDelete.getId()).join();
     }
 
+    /**
+     * @param requestingUser - user that is requesting the data, added by Spring Security
+     * @return HTTP 200 with message if user is found and delete was successful, otherwise error if user was not found
+     * @apiNote This endpoint deletes the currently signed-in user, even admins.
+     */
     @DeleteMapping("/me")
     public ResponseEntity<?> deleteMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {
         Long userId = requestingUser != null ? requestingUser.getId() : null;

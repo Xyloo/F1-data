@@ -29,8 +29,6 @@ import pl.pollub.f1data.Repositories.UserRepository;
 import pl.pollub.f1data.Security.JwtUtils;
 import pl.pollub.f1data.Services.impl.UserDetailsImpl;
 
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +48,11 @@ public class AuthController {
     private JwtUtils jwtUtils;
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
+    /**
+     * @param loginUserDTO - username and password
+     * @return HTTP 200 with JWT token if login is successful, otherwise HTTP 401 with message "Invalid username or password."
+     * @apiNote This endpoint is public. It returns a JWT token which users use to authenticate if login is successful.
+     */
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -63,13 +66,18 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
+    /**
+     * @param createUserDTO - username, email and password. Username and email must be unique.
+     * @return HTTP 200 with message "User registered successfully!" if registration is successful, otherwise HTTP 400 with message "Username already exists." or "Email already exists."
+     * @apiNote This endpoint is public. It registers a new user or throws an exception if username or email already exists. It does not log the user in.
+     */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         if(userRepository.getUserByUsername(createUserDTO.getUsername()).join().isPresent()) {
-            throw new UsernameExistsException(); //testing
+            throw new UsernameExistsException();
         }
         if(userRepository.getUserByEmail(createUserDTO.getEmail()).join().isPresent()) {
-            throw new EmailExistsException(); //testing
+            throw new EmailExistsException();
         }
         User user = new User(createUserDTO.getUsername(), createUserDTO.getEmail(), encoder.encode(createUserDTO.getPassword()));
         user.setRoles(Set.of(roleRepository.getRoleByName(ERole.ROLE_USER).join().orElseThrow()));
@@ -78,6 +86,13 @@ public class AuthController {
 
     }
 
+    /**
+     * @param authentication - user that is requesting the data, added by Spring Security
+     * @param request - request data
+     * @param response - response data
+     * @return HTTP 200 with message "User logged out successfully!" if logout is successful, otherwise HTTP 400 with message "User is not logged in!"
+     * @apiNote This endpoint requires the user to be logged in. It logs the user out by clearing the authentication and deleting all cookies. It does not invalidate the JWT token - it is still valid until it expires.
+     */
     //I am not sure if this works at all...
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
@@ -99,28 +114,4 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User logged out successfully!"));
     }
 
-    @PostMapping("/password-reset")
-    public ResponseEntity<?> resetPassword(Authentication authentication) {
-        if(authentication == null) {
-            return ResponseEntity.badRequest().body("User is not logged in!");
-        }
-        logger.info("resetPassword: " + authentication.getName());
-        User user = userRepository.getUserByUsername(authentication.getName()).join().orElse(null);
-        if(user == null) {
-            return ResponseEntity.badRequest().body("User not found!");
-        }
-
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] token = new byte[16];
-        secureRandom.nextBytes(token);
-        String newPassword = Base64.getUrlEncoder().withoutPadding().encodeToString(token);
-        user.setPassword(encoder.encode(newPassword));
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new Object() {
-            public final String message = "Password reset successfully!";
-            public final String password = newPassword;
-        });
-
-    }
 }

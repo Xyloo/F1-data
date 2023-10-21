@@ -33,11 +33,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         //signing in
         //creating a new account
         //requesting a new password
-        if(     (request.getRequestURI().equals("/api/auth/password-reset") ||
-                request.getRequestURI().equals("/api/auth/signin") ||
-                request.getRequestURI().equals("api/auth/signup")) && request.getMethod().equals("POST")) {
-            filterChain.doFilter(request, response);
-            return;
+        if((request.getRequestURI().equals("/api/auth/signin") ||
+           request.getRequestURI().equals("api/auth/signup")) && request.getMethod().equals("POST")) {
+                filterChain.doFilter(request, response);
+                return;
         }
         try {
             String jwt = parseJwt(request);
