@@ -98,7 +98,7 @@ public class AuthController {
     public ResponseEntity<?> logoutUser(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         if(authentication == null) {
-            return ResponseEntity.badRequest().body("User is not logged in!");
+            return ResponseEntity.badRequest().body(new MessageResponse("User is not logged in!"));
         }
         logger.info("logoutUser: " + authentication.getName());
         logoutHandler.setClearAuthentication(true);

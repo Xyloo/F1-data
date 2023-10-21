@@ -11,4 +11,5 @@ import java.util.concurrent.CompletableFuture;
 public interface RoleRepository extends JpaRepository<Role, Long> {
     @Async
     CompletableFuture<Optional<Role>> getRoleByName(ERole name);
+
 }
