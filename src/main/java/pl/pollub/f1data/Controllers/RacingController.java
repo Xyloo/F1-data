@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
 import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
-import pl.pollub.f1data.Services.RaceService;
+import pl.pollub.f1data.Services.RacingService;
 
 import java.util.Optional;
 
@@ -13,11 +13,11 @@ import java.util.Optional;
 public class RacingController {
 
     @Autowired
-    RaceService raceService;
+    RacingService racingService;
 
     @GetMapping("/{raceId}/best-time")
     public ResponseEntity<DriverBestTimeDto> getBestRaceTimeByRaceId(@PathVariable Integer raceId) {
-        Optional<DriverBestTimeDto> bestTime = raceService.getBestRaceTimeByRaceId(raceId);
+        Optional<DriverBestTimeDto> bestTime = racingService.getBestRaceTimeByRaceId(raceId);
         if (bestTime != null) {
             return ResponseEntity.ok(bestTime.get());
         } else {
@@ -28,7 +28,7 @@ public class RacingController {
 
     @GetMapping("/{raceId}/average-time")
     public ResponseEntity<String> getAverageRaceTime(@PathVariable Integer raceId) {
-        String averageTime = raceService.getAverageRaceTime(raceId);
+        String averageTime = racingService.getAverageRaceTime(raceId);
         if (averageTime != null) {
             return ResponseEntity.ok(averageTime);
         } else {
@@ -38,12 +38,12 @@ public class RacingController {
 
     @GetMapping("/{raceId}/pitstops")
     public ResponseEntity<?> getPitstopsCountByLapForRace(@PathVariable Integer raceId) {
-        return ResponseEntity.ok(raceService.getPitstopsCountByLapForRace(raceId));
+        return ResponseEntity.ok(racingService.getPitstopsCountByLapForRace(raceId));
     }
 
     @GetMapping("/{circuitId}/summary/best-times")
     public ResponseEntity<CircuitSummaryDto> getBestRaceTimesByCircuit(@PathVariable Integer circuitId) {
-        CircuitSummaryDto circuitSummary = raceService.getBestRaceTimesByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummary = racingService.getBestRaceTimesByCircuitId(circuitId);
         if (circuitSummary != null) {
             return ResponseEntity.ok(circuitSummary);
         } else {
@@ -53,7 +53,7 @@ public class RacingController {
 
     @GetMapping("/{circuitId}/summary/average-lap-times")
     public ResponseEntity<CircuitSummaryDto> getAverageRaceTimesByCircuit(@PathVariable Integer circuitId) {
-        CircuitSummaryDto circuitSummary = raceService.getAverageTimeByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummary = racingService.getAverageTimeByCircuitId(circuitId);
         if (circuitSummary != null) {
             return ResponseEntity.ok(circuitSummary);
         } else {
@@ -63,7 +63,7 @@ public class RacingController {
 
     @GetMapping("/{circuitId}/summary/pitstops")
     public ResponseEntity<CircuitSummaryDto> getAllPitstopsByCircuit(@PathVariable Integer circuitId) {
-        CircuitSummaryDto circuitSummary = raceService.getAllPitstopsByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummary = racingService.getAllPitstopsByCircuitId(circuitId);
         if (circuitSummary != null) {
             return ResponseEntity.ok(circuitSummary);
         } else {
