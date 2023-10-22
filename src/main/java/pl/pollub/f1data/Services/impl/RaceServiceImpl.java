@@ -1,21 +1,21 @@
 package pl.pollub.f1data.Services.impl;
 
-import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
 import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
-import pl.pollub.f1data.Models.DTOs.RaceSummaryDto;
-import pl.pollub.f1data.Models.Data.*;
-import pl.pollub.f1data.Repositories.F1Database.*;
+import pl.pollub.f1data.Models.Data.Driver;
+import pl.pollub.f1data.Models.Data.Laptime;
+import pl.pollub.f1data.Models.Data.Result;
+import pl.pollub.f1data.Repositories.F1Database.LaptimeRepository;
+import pl.pollub.f1data.Repositories.F1Database.PitstopRepository;
+import pl.pollub.f1data.Repositories.F1Database.ResultRepository;
 import pl.pollub.f1data.Services.RaceService;
+import pl.pollub.f1data.Utils.TimeUtils;
 
-import java.sql.Time;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import pl.pollub.f1data.Utils.TimeUtils;
 
 @Service
 public class RaceServiceImpl implements RaceService {
@@ -26,32 +26,26 @@ public class RaceServiceImpl implements RaceService {
     private PitstopRepository pitstopRepository;
     @Autowired
     private LaptimeRepository laptimeRepository;
-    @Autowired
-    private CircuitRepository circuitRepository;
-    @Autowired
-    private RaceRepository raceRepository;
-
-
 
     @Override
     public Optional<DriverBestTimeDto> getBestRaceTimeByRaceId(Integer raceId) {
-        Optional<Result> bestResult = resultRepository.findFastestLapByRaceId(raceId);
-        if(bestResult.isEmpty()) return Optional.empty();
+        Result bestResult = resultRepository.findFastestLapByRaceId(raceId).orElse(null);
+        if(bestResult == null) return Optional.empty();
         return mapResultToDriverBestTimeDto(bestResult);
     }
 
     @Override
-    public Optional<DriverBestTimeDto> mapResultToDriverBestTimeDto(Optional<Result> bestResult) {
-        if (bestResult.isEmpty()) {
+    public Optional<DriverBestTimeDto> mapResultToDriverBestTimeDto(Result bestResult) {
+        if (bestResult == null) {
             return Optional.empty();
         }
 
-        Driver driver = bestResult.get().getDriver();
+        Driver driver = bestResult.getDriver();
         DriverBestTimeDto driverBestTimeDto = new DriverBestTimeDto(
                 driver.getForename(),
                 driver.getSurname(),
                 driver.getNumber(),
-                bestResult.get().getFastestLapTime()
+                bestResult.getFastestLapTime()
         );
         return Optional.of(driverBestTimeDto);
     }
@@ -78,53 +72,6 @@ public class RaceServiceImpl implements RaceService {
             resultMap.put((Integer) entry[0], (Long) entry[1]);
         }
         return resultMap;
-    }
-
-    @Override
-    public CircuitSummaryDto getBestRaceTimesByCircuitId(Integer circuitId) {
-        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
-        if(circuit.isEmpty()) return null;
-
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
-        for (Race race : raceList) {
-            Optional<DriverBestTimeDto> driverDto =  getBestRaceTimeByRaceId(race.getId());
-            RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
-            raceDto.setBestLapTime(driverDto.orElse(null)); //or new object?
-            circuitSummaryDto.races.add(raceDto);
-        }
-        return circuitSummaryDto;
-    }
-
-    @Override
-    public CircuitSummaryDto getAverageTimeByCircuitId(Integer circuitId){
-
-        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
-        if(circuit.isEmpty()) return null;
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
-        for (Race race : raceList) {
-            String averageRaceTime =  getAverageRaceTime(race.getId());
-            RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
-            raceDto.setAverageLapTime(averageRaceTime); //or new object?
-            circuitSummaryDto.races.add(raceDto);
-        }
-        return circuitSummaryDto;
-    }
-
-    @Override
-    public CircuitSummaryDto getAllPitstopsByCircuitId(Integer circuitId){
-        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
-        if(circuit.isEmpty()) return null;
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
-        for (Race race : raceList) {
-            Map<Integer, Long> pitstopsMap = getPitstopsCountByLapForRace(circuitId) ;
-            RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
-            raceDto.setLapPitstopMap(pitstopsMap); //or new object?
-            circuitSummaryDto.races.add(raceDto);
-        }
-        return circuitSummaryDto;
     }
 
 }
