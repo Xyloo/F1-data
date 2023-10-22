@@ -11,7 +11,8 @@ public interface ResultRepository extends JpaRepository<Result, Integer> {
 
     @Query("SELECT r FROM Result r WHERE r.race.id = :raceId AND r.fastestLapTime IS NOT NULL ORDER BY r.fastestLapTime ASC LIMIT 1")
     Optional<Result> findFastestLapByRaceId(@Param("raceId") Integer raceId);
-
+    @Query("SELECT r FROM Result r WHERE r.race.year.id = :year AND r.fastestLapTime IS NOT NULL ORDER BY r.fastestLapTime ASC LIMIT 1")
+    Optional<Result> findFastestLapByYear(@Param("year") Integer year);
 
 
 }

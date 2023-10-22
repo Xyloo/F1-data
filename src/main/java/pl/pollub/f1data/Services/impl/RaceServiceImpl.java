@@ -1,14 +1,12 @@
 package pl.pollub.f1data.Services.impl;
 
+import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
 import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
 import pl.pollub.f1data.Models.DTOs.RaceSummaryDto;
-import pl.pollub.f1data.Models.Data.Circuit;
-import pl.pollub.f1data.Models.Data.Laptime;
-import pl.pollub.f1data.Models.Data.Race;
-import pl.pollub.f1data.Models.Data.Result;
+import pl.pollub.f1data.Models.Data.*;
 import pl.pollub.f1data.Repositories.F1Database.*;
 import pl.pollub.f1data.Services.RaceService;
 
@@ -24,7 +22,6 @@ public class RaceServiceImpl implements RaceService {
 
     @Autowired
     private ResultRepository resultRepository;
-
     @Autowired
     private PitstopRepository pitstopRepository;
     @Autowired
@@ -36,18 +33,29 @@ public class RaceServiceImpl implements RaceService {
 
 
 
+    @Override
     public Optional<DriverBestTimeDto> getBestRaceTimeByRaceId(Integer raceId) {
         Optional<Result> bestResult = resultRepository.findFastestLapByRaceId(raceId);
         if(bestResult.isEmpty()) return Optional.empty();
+        return mapResultToDriverBestTimeDto(bestResult);
+    }
 
+    @Override
+    public Optional<DriverBestTimeDto> mapResultToDriverBestTimeDto(Optional<Result> bestResult) {
+        if (bestResult.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Driver driver = bestResult.get().getDriver();
         DriverBestTimeDto driverBestTimeDto = new DriverBestTimeDto(
-                bestResult.get().getDriver().getForename(),
-                bestResult.get().getDriver().getSurname(),
-                bestResult.get().getDriver().getNumber(),
+                driver.getForename(),
+                driver.getSurname(),
+                driver.getNumber(),
                 bestResult.get().getFastestLapTime()
         );
         return Optional.of(driverBestTimeDto);
     }
+
 
     @Override
     public String getAverageRaceTime(Integer raceId) {
@@ -79,7 +87,6 @@ public class RaceServiceImpl implements RaceService {
 
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
         CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
-
         for (Race race : raceList) {
             Optional<DriverBestTimeDto> driverDto =  getBestRaceTimeByRaceId(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
@@ -88,4 +95,36 @@ public class RaceServiceImpl implements RaceService {
         }
         return circuitSummaryDto;
     }
+
+    @Override
+    public CircuitSummaryDto getAverageTimeByCircuitId(Integer circuitId){
+
+        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
+        if(circuit.isEmpty()) return null;
+        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
+        for (Race race : raceList) {
+            String averageRaceTime =  getAverageRaceTime(race.getId());
+            RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
+            raceDto.setAverageLapTime(averageRaceTime); //or new object?
+            circuitSummaryDto.races.add(raceDto);
+        }
+        return circuitSummaryDto;
+    }
+
+    @Override
+    public CircuitSummaryDto getAllPitstopsByCircuitId(Integer circuitId){
+        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
+        if(circuit.isEmpty()) return null;
+        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
+        for (Race race : raceList) {
+            Map<Integer, Long> pitstopsMap = getPitstopsCountByLapForRace(circuitId) ;
+            RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
+            raceDto.setLapPitstopMap(pitstopsMap); //or new object?
+            circuitSummaryDto.races.add(raceDto);
+        }
+        return circuitSummaryDto;
+    }
+
 }
