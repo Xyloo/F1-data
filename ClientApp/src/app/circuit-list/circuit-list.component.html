@@ -1,1 +1,16 @@
-<p>circuit-list works!</p>
+<table>
+    <thead>
+        <th (click)="sortByName()">Name</th>
+        <th (click)="sortByCountry()">Location</th>
+        <th>Wikipedia</th>
+        <th>Google Maps</th>
+    </thead>
+    <tbody>
+        <tr *ngFor="let circuit of circuits">
+            <td><a href="/circuits/{{circuit.id}}">{{ circuit.name }}</a></td>
+            <td>{{ circuit.location }}, {{ circuit.country }}</td>
+            <td><a href="{{ circuit.url }}" target="_blank">Wikipedia</a></td>
+            <td><a href="https://google.com/maps/place/{{circuit.latitude}}+{{circuit.longitude}}" target="_blank">Google Maps</a></td>
+        </tr>
+    </tbody>
+</table>

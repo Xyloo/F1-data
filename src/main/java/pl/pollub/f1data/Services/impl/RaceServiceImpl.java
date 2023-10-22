@@ -55,7 +55,7 @@ public class RaceServiceImpl implements RaceService {
     public String getAverageRaceTime(Integer raceId) {
 
         List<Laptime> lapTimes = laptimeRepository.getLapTimesByRaceId(raceId);
-        if(lapTimes == null) return "";
+        if(lapTimes == null || lapTimes.size() == 0) return "";
         long totalMilliseconds = 0;
 
         for(Laptime laptime: lapTimes){
