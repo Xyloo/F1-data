@@ -8,6 +8,7 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 export class AuthService {
 
   isLoggedIn = false;
+  isAdmin = false;
 
   constructor(private http: HttpClient) { }
 
@@ -20,6 +21,9 @@ export class AuthService {
             localStorage.setItem('currentUser', response.token);
           }
           this.isLoggedIn = true;
+          if(response.roles.includes("ROLE_ADMIN")) {
+            this.isAdmin = true;
+          }
           return response;
         }),
         catchError(this.handleError)  // error handling
