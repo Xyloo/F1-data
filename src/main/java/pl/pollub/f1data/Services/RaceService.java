@@ -1,20 +1,11 @@
 package pl.pollub.f1data.Services;
 
-import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
-import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
-import pl.pollub.f1data.Models.Data.Result;
-
+import pl.pollub.f1data.Models.DTOs.RaceDto;
+import pl.pollub.f1data.Models.DTOs.ResultDto;
+import pl.pollub.f1data.Models.Data.Race;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public interface RaceService {
-
-    Optional<DriverBestTimeDto> getBestRaceTimeByRaceId(Integer raceId);
-    Optional<DriverBestTimeDto> mapResultToDriverBestTimeDto(Optional<Result> bestResult);
-    String getAverageRaceTime(Integer raceId);
-    Map<Integer, Long> getPitstopsCountByLapForRace(Integer raceId);
-    CircuitSummaryDto getBestRaceTimesByCircuitId(Integer circuitId);
-    CircuitSummaryDto getAverageTimeByCircuitId(Integer circuitId);
-    CircuitSummaryDto getAllPitstopsByCircuitId(Integer circuitId);
+    List<RaceDto> getAllRacesByYear(Integer year);
+    List<ResultDto> getRaceResultsByRaceId(Integer raceId);
 }
