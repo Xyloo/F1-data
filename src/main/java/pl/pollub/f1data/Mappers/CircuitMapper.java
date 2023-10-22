@@ -7,6 +7,4 @@ import pl.pollub.f1data.Models.Data.Circuit;
 @Mapper(componentModel = "spring")
 public interface CircuitMapper {
     CircuitDto toDto(Circuit circuit);
-    Circuit toEntity(CircuitDto circuitDto);
-
 }

@@ -1,9 +1,7 @@
 package pl.pollub.f1data.Services.impl;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.pollub.f1data.Mappers.AutoMapper;
 import pl.pollub.f1data.Mappers.CircuitMapper;
 import pl.pollub.f1data.Mappers.RaceMapper;
 import pl.pollub.f1data.Mappers.ResultMapper;

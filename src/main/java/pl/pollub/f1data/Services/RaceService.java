@@ -2,7 +2,6 @@ package pl.pollub.f1data.Services;
 
 import pl.pollub.f1data.Models.DTOs.RaceDto;
 import pl.pollub.f1data.Models.DTOs.ResultDto;
-import pl.pollub.f1data.Models.Data.Race;
 import java.util.List;
 
 public interface RaceService {
