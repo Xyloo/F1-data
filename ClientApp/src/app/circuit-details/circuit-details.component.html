@@ -17,15 +17,19 @@
             <tbody>
                 <tr *ngFor="let lapTime of circuit.races">
                     <td>{{lapTime.year}}</td>
-                    <td>{{lapTime.bestLapTime.bestLapTime}} by {{lapTime.bestLapTime.forename}} {{lapTime.bestLapTime.surname}}</td>
-                    <td>{{lapTime.averageLapTime}}</td>
+                    <td *ngIf="lapTime.bestLapTime">{{lapTime.bestLapTime.bestLapTime}} by {{lapTime.bestLapTime.forename}} {{lapTime.bestLapTime.surname}}</td>
+                    <td *ngIf="!lapTime.bestLapTime">No data available</td>
+                    <td *ngIf="lapTime.averageLapTime">{{lapTime.averageLapTime}}</td>
+                    <td *ngIf="!lapTime.averageLapTime">No data available</td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div style="display: inline-flex; flex-direction: column;" onload="createChart()">
-        <h4>Best lap time ever: {{bestLapTime}} by {{bestLapTimeDriver}}</h4>
-        <h5>Average overall lap time: {{averageLapTime}}</h5>
+        <h4 *ngIf="bestLapTime!=='0:0.0'">Best lap time ever: {{bestLapTime}} by {{bestLapTimeDriver}}</h4>
+        <h5 *ngIf="averageLapTime!=='NaN:NaN.NaN'">Average overall lap time: {{averageLapTime}}</h5>
+        <h4 *ngIf="bestLapTime==='0:0.0'">Best lap time ever: No data available</h4>
+        <h5 *ngIf="averageLapTime==='NaN:NaN.NaN'">Average overall lap time: No data available</h5>
         <canvas id="pitstopChart">{{chart}}</canvas>
     </div>
 </div>

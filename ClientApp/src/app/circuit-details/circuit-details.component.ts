@@ -13,9 +13,9 @@ export class CircuitDetailsComponent {
     circuit: CircuitDetailsModel;
     id: string | null
     raceName: Set<String> = new Set<string>();
-    bestLapTime: string = '';
-    averageLapTime: string = '';
-    bestLapTimeDriver: string = '';
+    bestLapTime: string = 'No data available';
+    averageLapTime: string = 'No data available';
+    bestLapTimeDriver: string = 'No data available';
     public chart: any;
     public isHidden: boolean = true;
     constructor(private route: ActivatedRoute, private http: HttpClient) {
@@ -31,6 +31,9 @@ export class CircuitDetailsComponent {
             this.circuit = result;
             result.races.forEach(race => {
                 this.raceName.add(race.name);
+                if(race.bestLapTime === undefined || race.bestLapTime == null) {
+                    return;
+                }
                 let bestTime = this.convertStringToTime(race.bestLapTime.bestLapTime);
                 let avgTime = this.convertStringToTime(race.averageLapTime);
                 if (bestLapTime === 0 || bestTime < bestLapTime) {
