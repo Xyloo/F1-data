@@ -26,10 +26,13 @@
         </table>
     </div>
     <div style="display: inline-flex; flex-direction: column;" onload="createChart()">
-        <h4 *ngIf="bestLapTime!=='0:0.0'">Best lap time ever: {{bestLapTime}} by {{bestLapTimeDriver}}</h4>
+        <h4 *ngIf="bestLapTime!=='0:00.000'">Best lap time ever: {{bestLapTime}} by {{bestLapTimeDriver}}</h4>
         <h5 *ngIf="averageLapTime!=='NaN:NaN.NaN'">Average overall lap time: {{averageLapTime}}</h5>
-        <h4 *ngIf="bestLapTime==='0:0.0'">Best lap time ever: No data available</h4>
+        <h4 *ngIf="bestLapTime==='0:00.000'">Best lap time ever: No data available</h4>
         <h5 *ngIf="averageLapTime==='NaN:NaN.NaN'">Average overall lap time: No data available</h5>
         <canvas id="pitstopChart">{{chart}}</canvas>
     </div>
+</div>
+<div *ngIf="!circuit">
+    <h2>No circuit was found with the provided ID.</h2>
 </div>

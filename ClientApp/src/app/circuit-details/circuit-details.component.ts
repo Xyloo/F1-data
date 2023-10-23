@@ -31,17 +31,21 @@ export class CircuitDetailsComponent {
             this.circuit = result;
             result.races.forEach(race => {
                 this.raceName.add(race.name);
+                if(race.averageLapTime !== undefined) {
+                    let avgTime = this.convertStringToTime(race.averageLapTime);
+                    if(avgTime !== 0) {
+                        avgLapTime += avgTime;
+                        avgLapTimeCount++;
+                    }
+                }
                 if(race.bestLapTime === undefined || race.bestLapTime == null) {
                     return;
                 }
                 let bestTime = this.convertStringToTime(race.bestLapTime.bestLapTime);
-                let avgTime = this.convertStringToTime(race.averageLapTime);
                 if (bestLapTime === 0 || bestTime < bestLapTime) {
                     bestLapTime = bestTime;
                     bestLapTimeDriver = race.bestLapTime.forename + ' ' + race.bestLapTime.surname
                 }
-                avgLapTime += avgTime;
-                avgLapTimeCount++;
             })
             this.bestLapTime = this.convertTimeToString(bestLapTime);
             this.averageLapTime = this.convertTimeToString(avgLapTime / avgLapTimeCount);
@@ -57,6 +61,9 @@ export class CircuitDetailsComponent {
     }
 
     convertStringToTime(time: string): number {
+        if(time === undefined || time === null || time.length === 0) {
+            return 0;
+        }
         let timeArray = time.split(':');
         let minutes = parseInt(timeArray[0]);
         let remainder = timeArray[1].split('.');
@@ -69,7 +76,20 @@ export class CircuitDetailsComponent {
         let minutes = Math.floor(time / 60000);
         let seconds = Math.floor((time % 60000) / 1000);
         let milliseconds = Math.floor((time % 60000) % 1000);
-        return `${minutes}:${seconds}.${milliseconds}`;
+
+        let millisecondsString = milliseconds.toString();
+        if (millisecondsString.length === 1) {
+            millisecondsString = '00' + milliseconds;
+        }
+        if (millisecondsString.length === 2) {
+            millisecondsString = '0' + milliseconds;
+        }
+
+        let secondsString = seconds.toString();
+        if (secondsString.length === 1) {
+            secondsString = '0' + seconds;
+        }
+        return `${minutes}:${secondsString}.${millisecondsString}`;
     }
 
     public createChart() {
