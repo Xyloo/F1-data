@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
 import pl.pollub.f1data.Services.RacingService;
+import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
 
 @RestController
 @RequestMapping("api/racing")
@@ -18,7 +19,7 @@ public class RacingController {
 
     @GetMapping("/{raceId}/best-time")
     public ResponseEntity<DriverBestTimeDto> getBestRaceTimeByRaceId(@PathVariable Integer raceId) {
-        DriverBestTimeDto bestTime = raceService.getBestRaceTimeByRaceId(raceId).orElse(null);
+        DriverBestTimeDto bestTime = racingService.getBestRaceTimeByRaceId(raceId).orElse(null);
         if (bestTime != null) {
             return ResponseEntity.ok(bestTime);
         } else {

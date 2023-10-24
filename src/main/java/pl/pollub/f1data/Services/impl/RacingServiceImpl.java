@@ -80,11 +80,11 @@ public class RacingServiceImpl implements RacingService {
 
     @Override
     public CircuitSummaryDto getBestRaceTimesByCircuitId(Integer circuitId) {
-        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
-        if(circuit.isEmpty()) return null;
+        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
+        if(circuit == null) return null;
 
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
             Optional<DriverBestTimeDto> driverDto =  getBestRaceTimeByRaceId(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
@@ -96,12 +96,11 @@ public class RacingServiceImpl implements RacingService {
 
     @Override
     public CircuitSummaryDto getAverageTimeByCircuitId(Integer circuitId){
+        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
+        if(circuit == null) return null;
 
-        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
-        if(circuit.isEmpty()) return null;
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
-        for (Race race : raceList) {
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());        for (Race race : raceList) {
             String averageRaceTime =  getAverageRaceTime(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
             raceDto.setAverageLapTime(averageRaceTime); //or new object?
@@ -112,11 +111,11 @@ public class RacingServiceImpl implements RacingService {
 
     @Override
     public CircuitSummaryDto getAllPitstopsByCircuitId(Integer circuitId){
-        Optional<Circuit> circuit = circuitRepository.findById(circuitId);
-        if(circuit.isEmpty()) return null;
+        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
+        if(circuit == null) return null;
+
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.get().getName(), circuit.get().getCircuitRef());
-        for (Race race : raceList) {
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());        for (Race race : raceList) {
             Map<Integer, Long> pitstopsMap = getPitstopsCountByLapForRace(circuitId) ;
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
             raceDto.setLapPitstopMap(pitstopsMap); //or new object?

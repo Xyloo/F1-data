@@ -12,6 +12,7 @@ import pl.pollub.f1data.Models.Data.Race;
 import pl.pollub.f1data.Repositories.F1Database.CircuitRepository;
 import pl.pollub.f1data.Repositories.F1Database.RaceRepository;
 import pl.pollub.f1data.Services.CircuitService;
+import pl.pollub.f1data.Services.RacingService;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class CircuitServiceImpl implements CircuitService {
     @Autowired
     private RaceRepository raceRepository;
     @Autowired
-    private RaceServiceImpl raceService;
+    private RacingService racingService;
 
     private static final Logger logger = LoggerFactory.getLogger(CircuitServiceImpl.class);
     @Override
@@ -35,9 +36,9 @@ public class CircuitServiceImpl implements CircuitService {
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
         CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race: raceList) {
-            DriverBestTimeDto driverDto = raceService.getBestRaceTimeByRaceId(race.getId()).orElse(null);
-            String averageRaceTime = raceService.getAverageRaceTime(race.getId());
-            Map<Integer, Long> pitstopsMap = raceService.getPitstopsCountByLapForRace(race.getId());
+            DriverBestTimeDto driverDto = racingService.getBestRaceTimeByRaceId(race.getId()).orElse(null);
+            String averageRaceTime = racingService.getAverageRaceTime(race.getId());
+            Map<Integer, Long> pitstopsMap = racingService.getPitstopsCountByLapForRace(race.getId());
             logger.info("Pitstops map: " + pitstopsMap.toString());
 
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
@@ -57,7 +58,7 @@ public class CircuitServiceImpl implements CircuitService {
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
         CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
-            Optional<DriverBestTimeDto> driverDto = raceService.getBestRaceTimeByRaceId(race.getId());
+            Optional<DriverBestTimeDto> driverDto = racingService.getBestRaceTimeByRaceId(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
             raceDto.setBestLapTime(driverDto.orElse(null)); //or new object?
             circuitSummaryDto.races.add(raceDto);
@@ -73,7 +74,7 @@ public class CircuitServiceImpl implements CircuitService {
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
         CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
-            String averageRaceTime = raceService.getAverageRaceTime(race.getId());
+            String averageRaceTime = racingService.getAverageRaceTime(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
             raceDto.setAverageLapTime(averageRaceTime); //or new object?
             circuitSummaryDto.races.add(raceDto);
@@ -89,7 +90,7 @@ public class CircuitServiceImpl implements CircuitService {
         List<Race> raceList = raceRepository.getByCircuitId(circuitId);
         CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
-            Map<Integer, Long> pitstopsMap = raceService.getPitstopsCountByLapForRace(race.getId()) ;
+            Map<Integer, Long> pitstopsMap = racingService.getPitstopsCountByLapForRace(race.getId()) ;
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
             raceDto.setLapPitstopMap(pitstopsMap); //or new object?
             circuitSummaryDto.races.add(raceDto);
