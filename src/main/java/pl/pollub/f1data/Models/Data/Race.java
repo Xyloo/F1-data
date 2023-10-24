@@ -1,5 +1,6 @@
 package pl.pollub.f1data.Models.Data;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -35,6 +36,7 @@ public class Race {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "circuitId", nullable = false)
+    @JsonManagedReference
     private Circuit circuit;
 
     @Size(max = 255)

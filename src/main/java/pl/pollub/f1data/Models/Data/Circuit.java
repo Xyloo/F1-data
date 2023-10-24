@@ -1,5 +1,6 @@
 package pl.pollub.f1data.Models.Data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -54,6 +55,7 @@ public class Circuit {
     private String url;
 
     @OneToMany(mappedBy = "circuit")
+    @JsonBackReference
     private Set<Race> races = new LinkedHashSet<>();
 
 }

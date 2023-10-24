@@ -1,0 +1,38 @@
+<div *ngIf="circuit">
+    <h2>{{circuit.name}}</h2>
+    <p>Location: {{circuit.location}}, {{circuit.country}}</p>
+    <p>Race name: <span *ngFor="let name of raceName; let isLast=last">
+        <span>{{name}}</span><span class="list-format" *ngIf="!isLast">&#44;&nbsp;</span>
+    </span></p>
+    <div style="display: inline-block; margin-right: 3em;">
+        <h5>Best and average lap times by year:</h5>
+        <table>
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Best lap time</th>
+                    <th>Average lap time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let lapTime of circuit.races">
+                    <td>{{lapTime.year}}</td>
+                    <td *ngIf="lapTime.bestLapTime">{{lapTime.bestLapTime.bestLapTime}} by {{lapTime.bestLapTime.forename}} {{lapTime.bestLapTime.surname}}</td>
+                    <td *ngIf="!lapTime.bestLapTime">No data available</td>
+                    <td *ngIf="lapTime.averageLapTime">{{lapTime.averageLapTime}}</td>
+                    <td *ngIf="!lapTime.averageLapTime">No data available</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="display: inline-flex; flex-direction: column;" onload="createChart()">
+        <h4 *ngIf="bestLapTime!=='0:00.000'">Best lap time ever: {{bestLapTime}} by {{bestLapTimeDriver}}</h4>
+        <h5 *ngIf="averageLapTime!=='NaN:NaN.NaN'">Average overall lap time: {{averageLapTime}}</h5>
+        <h4 *ngIf="bestLapTime==='0:00.000'">Best lap time ever: No data available</h4>
+        <h5 *ngIf="averageLapTime==='NaN:NaN.NaN'">Average overall lap time: No data available</h5>
+        <canvas id="pitstopChart">{{chart}}</canvas>
+    </div>
+</div>
+<div *ngIf="!circuit">
+    <h2>No circuit was found with the provided ID.</h2>
+</div>

@@ -15,6 +15,7 @@ import { LoadingAnimationComponent } from './loading-animation/loading-animation
 import { AuthGuard } from './auth-guard.service';
 import { TokenInterceptor } from './interceptors/token-interceptor';
 import { CircuitListComponent } from './circuit-list/circuit-list.component';
+import { CircuitDetailsComponent } from './circuit-details/circuit-details.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { CircuitListComponent } from './circuit-list/circuit-list.component';
     LoginComponent,
     RegisterComponent,
     LoadingAnimationComponent,
-    CircuitListComponent
+    CircuitListComponent,
+    CircuitDetailsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -34,10 +36,11 @@ import { CircuitListComponent } from './circuit-list/circuit-list.component';
     FormsModule,
     CommonModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegisterComponent },
-      { path: 'circuits', component: CircuitListComponent }
+        { path: '', component: HomeComponent, pathMatch: 'full' },
+        { path: 'login', component: LoginComponent },
+        { path: 'register', component: RegisterComponent },
+        { path: 'circuits', component: CircuitListComponent },
+        { path: 'circuits/:id', component: CircuitDetailsComponent },
     ])
   ],
   providers: [
