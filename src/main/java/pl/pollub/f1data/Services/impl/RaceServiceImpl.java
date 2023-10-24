@@ -8,6 +8,14 @@ import pl.pollub.f1data.Models.Data.Laptime;
 import pl.pollub.f1data.Models.Data.Result;
 import pl.pollub.f1data.Repositories.F1Database.LaptimeRepository;
 import pl.pollub.f1data.Repositories.F1Database.PitstopRepository;
+import pl.pollub.f1data.Mappers.CircuitMapper;
+import pl.pollub.f1data.Mappers.RaceMapper;
+import pl.pollub.f1data.Mappers.ResultMapper;
+import pl.pollub.f1data.Models.DTOs.RaceDto;
+import pl.pollub.f1data.Models.DTOs.ResultDto;
+import pl.pollub.f1data.Models.Data.Race;
+import pl.pollub.f1data.Models.Data.Result;
+import pl.pollub.f1data.Repositories.F1Database.RaceRepository;
 import pl.pollub.f1data.Repositories.F1Database.ResultRepository;
 import pl.pollub.f1data.Services.RaceService;
 import pl.pollub.f1data.Utils.TimeUtils;
@@ -16,16 +24,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RaceServiceImpl implements RaceService {
 
     @Autowired
+    private RaceRepository raceRepository;
+    @Autowired
     private ResultRepository resultRepository;
     @Autowired
-    private PitstopRepository pitstopRepository;
-    @Autowired
     private LaptimeRepository laptimeRepository;
+    @Autowired
+    private RaceMapper raceMapper;
+    @Autowired
+    private CircuitMapper circuitMapper;
+    @Autowired
+    private ResultMapper resultMapper;
 
     @Override
     public Optional<DriverBestTimeDto> getBestRaceTimeByRaceId(Integer raceId) {
@@ -52,7 +68,9 @@ public class RaceServiceImpl implements RaceService {
 
 
     @Override
-    public String getAverageRaceTime(Integer raceId) {
+    public List<RaceDto> getAllRacesByYear(Integer year) {
+        List<RaceDto> raceDtosList = new ArrayList<>();
+        List<Race> races = raceRepository.findAllByYear(year);
 
         List<Laptime> lapTimes = laptimeRepository.getLapTimesByRaceId(raceId);
         if(lapTimes == null || lapTimes.size() == 0) return "";
@@ -70,8 +88,22 @@ public class RaceServiceImpl implements RaceService {
         Map<Integer, Long> resultMap = new LinkedHashMap<>();
         for (Object[] entry : rawData) {
             resultMap.put((Integer) entry[0], (Long) entry[1]);
+        for(Race race : races){
+            raceDtosList.add(raceMapper.toDto(race));
         }
-        return resultMap;
+        return raceDtosList;
+    }//race id year round circuitDto name date time url
+
+    @Override
+    public List<ResultDto> getRaceResultsByRaceId(Integer raceId){
+        List<Result> results = resultRepository.findByRaceId(raceId);
+        List<ResultDto> resultDtos = new ArrayList<>();
+
+        for(Result result : results){
+            resultDtos.add(resultMapper.toDto(result));
+        }
+        return resultDtos;
     }
+    //driver forename surname, contructor name, grid, positionOrder, points, time, statusDTO
 
 }
