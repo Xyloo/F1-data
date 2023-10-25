@@ -25,25 +25,25 @@ public class UserControllerAdvices {
     @ExceptionHandler(EmailExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<?>  handleEmailExistsException(EmailExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<?>  handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(UsernameExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<?>  handleUsernameExistsException(UsernameExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?>  handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(TransactionSystemException.class)
@@ -57,7 +57,7 @@ public class UserControllerAdvices {
             }
             return ResponseEntity.badRequest().body(new MessageResponse("Error: " + message));
         }
-        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

@@ -82,7 +82,7 @@ public class AuthController {
         User user = new User(createUserDTO.getUsername(), createUserDTO.getEmail(), encoder.encode(createUserDTO.getPassword()));
         user.setRoles(Set.of(roleRepository.getRoleByName(ERole.ROLE_USER).join().orElseThrow()));
         userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.status(201).body(new MessageResponse("User registered successfully!"));
 
     }
 
@@ -98,7 +98,7 @@ public class AuthController {
     public ResponseEntity<?> logoutUser(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         if(authentication == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("User is not logged in!"));
+            return ResponseEntity.status(401).body(new MessageResponse("Error: User is not logged in!"));
         }
         logger.info("logoutUser: " + authentication.getName());
         logoutHandler.setClearAuthentication(true);
