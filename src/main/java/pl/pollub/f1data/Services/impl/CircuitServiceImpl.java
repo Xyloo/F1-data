@@ -102,4 +102,12 @@ public class CircuitServiceImpl implements CircuitService {
     public List<Circuit> getAllCircuits() {
         return circuitRepository.findAll();
     }
+
+    @Override
+    public int deleteCircuit(Integer circuitId) {
+        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
+        if (circuit == null) return 400;
+        circuitRepository.deleteById(circuitId);
+        return 200;
+    }
 }

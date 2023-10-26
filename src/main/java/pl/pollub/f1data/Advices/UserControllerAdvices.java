@@ -63,7 +63,7 @@ public class UserControllerAdvices {
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        return ResponseEntity.badRequest().body(new MessageResponse("Error: Duplicate entry. Username or email already exists."));
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(AccessDeniedException.class)

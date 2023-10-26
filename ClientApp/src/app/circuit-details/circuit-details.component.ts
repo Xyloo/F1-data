@@ -50,7 +50,7 @@ export class CircuitDetailsComponent {
             this.bestLapTime = this.convertTimeToString(bestLapTime);
             this.averageLapTime = this.convertTimeToString(avgLapTime / avgLapTimeCount);
             this.bestLapTimeDriver = bestLapTimeDriver;
-            this.circuit.races.sort((a, b) => a.year - b.year );
+            this.circuit.races.sort((a, b) => b.year - a.year );
         })
     }
 

@@ -12,4 +12,6 @@ public interface CircuitService {
 
     CircuitSummaryDto getCircuitStats(Integer circuitId);
     List<Circuit> getAllCircuits();
+
+    int deleteCircuit(Integer circuitId);
 }
