@@ -71,7 +71,7 @@ class AuthControllerIntegrationTests {
         }
 
         @Test
-        public void shouldReturnErrorMessageWhenUserDataIncorrect() throws Exception {
+        public void shouldReturnErrorMessageWhenPasswordIncorrect() throws Exception {
             //given
             User user = new User();
             user.setUsername("testUser");
@@ -116,257 +116,266 @@ class AuthControllerIntegrationTests {
             userRepository.delete(user);
         }
 
-        @Test
-        public void shouldReturnErrorMessageWhenUsernameAlreadyExists() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername("testUser");
-            user.setPassword("useruser");
-            user.setEmail("user@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 409;
-            assert response.getContentAsString().contains("Error: Username already exists");
+        @Nested
+        public class UserExistsAlreadyTests {
+            @Test
+            public void shouldReturnErrorMessageWhenUsernameAlreadyExists() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername("testUser");
+                user.setPassword("useruser");
+                user.setEmail("user@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 409;
+                assert response.getContentAsString().contains("Error: Username already exists");
+            }
+
+            @Test
+            public void shouldReturnErrorMessageWhenEmailAlreadyExists() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername("testUser2");
+                user.setPassword("useruser");
+                user.setEmail("user@f1-data.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 409;
+                assert response.getContentAsString().contains("Error: Email already exists");
+            }
         }
 
-        @Test
-        public void shouldReturnErrorMessageWhenEmailAlreadyExists() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername("testUser2");
-            user.setPassword("useruser");
-            user.setEmail("user@f1-data.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 409;
-            assert response.getContentAsString().contains("Error: Email already exists");
+        @Nested
+        public class FieldsNotSetTests {
+            @Test
+            public void shouldReturnErrorMessageWhenUsernameNotSet() throws Exception {
+                //given
+                User user = new User();
+                user.setPassword("useruser");
+                user.setEmail(generateRandomString(10) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Username must be between 3 and 32 characters long.")).or(
+                        containsString("Error: Username cannot be blank."))
+                );
+            }
+
+            @Test
+            public void shouldReturnErrorMessageWhenPasswordNotSet() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setEmail(generateRandomString(10) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Password must be between 6 and 32 characters long.")).or(
+                        containsString("Error: Password cannot be blank."))
+                );
+            }
+
+            @Test
+            public void shouldReturnErrorMessageWhenEmailNotSet() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setPassword("useruser");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Email cannot be blank.")).or(
+                        containsString("Error: Email must be valid."))
+                );
+            }
         }
+        @Nested
+        public class DataInvalidTests {
+            @Test
+            public void shouldReturnErrorMessageWhenUsernameTooShort() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername("t");
+                user.setPassword("useruser");
+                user.setEmail(generateRandomString(10) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assert response.getContentAsString().contains("Error: Username must be between 3 and 32 characters long.");
+            }
 
-        @Test
-        public void shouldReturnErrorMessageWhenUsernameNotSet() throws Exception {
-            //given
-            User user = new User();
-            user.setPassword("useruser");
-            user.setEmail(generateRandomString(10) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Username must be between 3 and 32 characters long.")).or(
-                    containsString("Error: Username cannot be blank."))
-            );
+            @Test
+            public void shouldReturnErrorMessageWhenUsernameTooLong() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(35));
+                user.setPassword("useruser");
+                user.setEmail(generateRandomString(10) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assert response.getContentAsString().contains("Error: Username must be between 3 and 32 characters long.");
+            }
+
+            @Test
+            public void shouldReturnErrorMessageWhenEmailInvalid() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setPassword("useruser");
+                user.setEmail("invalidEmail");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assert response.getContentAsString().contains("Error: Email must be valid.");
+            }
+            @Test
+            public void shouldReturnErrorMessageWhenEmailTooLong() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setPassword("useruser");
+                user.setEmail(generateRandomString(100) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Email must be less than 100 characters long.")).or(
+                        containsString("Error: Email must be valid."))
+                );
+            }
+
+            @Test
+            public void shouldReturnErrorMessageWhenPasswordTooLong() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setPassword(generateRandomString(110));
+                user.setEmail(generateRandomString(15) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())
+                ).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assert response.getContentAsString().contains("Error: Password must be between 6 and 100 characters long.");
+            }
         }
+        @Nested
+        public class DataBlankTests {
+            @Test
+            public void shouldReturnErrorMessageWhenUsernameBlank() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername("");
+                user.setPassword("useruser");
+                user.setEmail(generateRandomString(10) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user).getJson())).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Username must be between 3 and 32 characters long.")).or(
+                        containsString("Error: Username cannot be blank."))
+                );
+            }
 
-        @Test
-        public void shouldReturnErrorMessageWhenPasswordNotSet() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setEmail(generateRandomString(10) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Password must be between 6 and 32 characters long.")).or(
-                    containsString("Error: Password cannot be blank."))
-            );
-        }
+            @Test
+            public void shouldReturnErrorMessageWhenEmailBlank() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setPassword("useruser");
+                user.setEmail("");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser.write(user)
+                                        .getJson())).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Email cannot be blank.")).or(
+                        containsString("Error: Email must be valid."))
+                );
 
-        @Test
-        public void shouldReturnErrorMessageWhenEmailNotSet() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setPassword("useruser");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Email cannot be blank.")).or(
-                    containsString("Error: Email must be valid."))
-            );
-        }
+            }
 
-        @Test
-        public void shouldReturnErrorMessageWhenUsernameTooShort() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername("t");
-            user.setPassword("useruser");
-            user.setEmail(generateRandomString(10) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assert response.getContentAsString().contains("Error: Username must be between 3 and 32 characters long.");
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenUsernameTooLong() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(35));
-            user.setPassword("useruser");
-            user.setEmail(generateRandomString(10) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assert response.getContentAsString().contains("Error: Username must be between 3 and 32 characters long.");
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenEmailInvalid() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setPassword("useruser");
-            user.setEmail("invalidEmail");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assert response.getContentAsString().contains("Error: Email must be valid.");
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenUsernameBlank() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername("");
-            user.setPassword("useruser");
-            user.setEmail(generateRandomString(10) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Username must be between 3 and 32 characters long.")).or(
-                    containsString("Error: Username cannot be blank."))
-            );
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenEmailBlank() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setPassword("useruser");
-            user.setEmail("");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user)
-                                    .getJson())).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Email cannot be blank.")).or(
-                    containsString("Error: Email must be valid."))
-            );
-
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenPasswordBlank() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setPassword("");
-            user.setEmail(generateRandomString(10) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser
-                                    .write(user)
-                                    .getJson())).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Password must be between 6 and 100 characters long.")).or(
-                    containsString("Error: Password cannot be blank."))
-            );
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenEmailTooLong() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setPassword("useruser");
-            user.setEmail(generateRandomString(100) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assertThat(response.getContentAsString(), either(
-                    containsString("Error: Email must be less than 100 characters long.")).or(
-                    containsString("Error: Email must be valid."))
-            );
-        }
-
-        @Test
-        public void shouldReturnErrorMessageWhenPasswordTooLong() throws Exception {
-            //given
-            User user = new User();
-            user.setUsername(generateRandomString(10));
-            user.setPassword(generateRandomString(110));
-            user.setEmail(generateRandomString(15) + "@testing.com");
-            // when
-            MockHttpServletResponse response = mockMvc.perform(
-                    post("/api/auth/signup")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonUser.write(user).getJson())
-            ).andReturn().getResponse();
-            // then
-            assert response.getStatus() == 400;
-            assert response.getContentAsString().contains("Error: Password must be between 6 and 100 characters long.");
+            @Test
+            public void shouldReturnErrorMessageWhenPasswordBlank() throws Exception {
+                //given
+                User user = new User();
+                user.setUsername(generateRandomString(10));
+                user.setPassword("");
+                user.setEmail(generateRandomString(10) + "@testing.com");
+                // when
+                MockHttpServletResponse response = mockMvc.perform(
+                        post("/api/auth/signup")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonUser
+                                        .write(user)
+                                        .getJson())).andReturn().getResponse();
+                // then
+                assert response.getStatus() == 400;
+                assertThat(response.getContentAsString(), either(
+                        containsString("Error: Password must be between 6 and 100 characters long.")).or(
+                        containsString("Error: Password cannot be blank."))
+                );
+            }
         }
     }
 
