@@ -34,6 +34,7 @@ public class Sprintresult {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "constructorId", nullable = false)
+    @JsonManagedReference
     private Constructor constructor;
 
     @NotNull

@@ -1,5 +1,6 @@
 package pl.pollub.f1data.Models.Data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,18 +42,23 @@ public class Constructor {
     private String url;
 
     @OneToMany(mappedBy = "constructor")
+    @JsonBackReference
     private Set<Constructorresult> constructorresults = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "constructor")
+    @JsonBackReference
     private Set<Constructorstanding> constructorstandings = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "constructor")
+    @JsonBackReference
     private Set<Qualifying> qualifyings = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "constructor")
+    @JsonBackReference
     private Set<Result> results = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "constructor")
+    @JsonBackReference
     private Set<Sprintresult> sprintresults = new LinkedHashSet<>();
 
 }
