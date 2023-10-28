@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,10 +18,8 @@ import pl.pollub.f1data.Exceptions.UserNotFoundException;
 import pl.pollub.f1data.Exceptions.UsernameExistsException;
 import pl.pollub.f1data.Models.MessageResponse;
 
-import java.nio.file.AccessDeniedException;
-
 @ControllerAdvice
-public class UserControllerAdvices {
+public class ControllerExceptionAdvices {
 
     @ExceptionHandler(EmailExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
