@@ -32,6 +32,7 @@ public class Result {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "constructorId", nullable = false)
+    @JsonManagedReference
     private Constructor constructor;
 
     @Column(name = "number")

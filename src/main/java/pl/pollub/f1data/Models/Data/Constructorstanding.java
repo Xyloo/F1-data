@@ -1,5 +1,6 @@
 package pl.pollub.f1data.Models.Data;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,6 +25,7 @@ public class Constructorstanding {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "constructorId", nullable = false)
+    @JsonManagedReference
     private Constructor constructor;
 
     @NotNull
