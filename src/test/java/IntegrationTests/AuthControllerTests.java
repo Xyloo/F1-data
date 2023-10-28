@@ -41,7 +41,7 @@ class AuthControllerTests {
         JacksonTester.initFields(this, JsonMapper.builder().disable(MapperFeature.USE_ANNOTATIONS).build());
     }
 
-    public String generateRandomString(int length) {
+    public static String generateRandomString(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder randomString = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -115,7 +115,7 @@ class AuthControllerTests {
             assert response.getContentAsString().contains("User registered successfully!");
 
             //cleanup
-            userRepository.delete(user);
+            userRepository.delete(userRepository.getUserByUsername(user.getUsername()).get().get());
         }
 
         @Nested
