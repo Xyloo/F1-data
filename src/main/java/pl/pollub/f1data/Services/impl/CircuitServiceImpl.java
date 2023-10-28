@@ -1,8 +1,7 @@
 package pl.pollub.f1data.Services.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
 import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
@@ -27,19 +26,17 @@ public class CircuitServiceImpl implements CircuitService {
     @Autowired
     private RacingService racingService;
 
-    private static final Logger logger = LoggerFactory.getLogger(CircuitServiceImpl.class);
     @Override
     public CircuitSummaryDto getCircuitStats(Integer circuitId) {
-        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
-        if (circuit == null) return null;
+        Pair<CircuitSummaryDto, List<Race>> dataPair = loadCircuit(circuitId);
+        if(dataPair == null) return null;
+        CircuitSummaryDto circuitSummaryDto = dataPair.getFirst();
+        List<Race> raceList = dataPair.getSecond();
 
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race: raceList) {
             DriverBestTimeDto driverDto = racingService.getBestRaceTimeByRaceId(race.getId()).orElse(null);
             String averageRaceTime = racingService.getAverageRaceTime(race.getId());
             Map<Integer, Long> pitstopsMap = racingService.getPitstopsCountByLapForRace(race.getId());
-            logger.info("Pitstops map: " + pitstopsMap.toString());
 
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
             raceDto.setBestLapTime(driverDto);
@@ -52,11 +49,11 @@ public class CircuitServiceImpl implements CircuitService {
 
     @Override
     public CircuitSummaryDto getBestRaceTimesByCircuitId(Integer circuitId) {
-        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
-        if (circuit == null) return null;
+        Pair<CircuitSummaryDto, List<Race>> dataPair = loadCircuit(circuitId);
+        if(dataPair == null) return null;
+        CircuitSummaryDto circuitSummaryDto = dataPair.getFirst();
+        List<Race> raceList = dataPair.getSecond();
 
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
             Optional<DriverBestTimeDto> driverDto = racingService.getBestRaceTimeByRaceId(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
@@ -68,11 +65,11 @@ public class CircuitServiceImpl implements CircuitService {
 
     @Override
     public CircuitSummaryDto getAverageTimeByCircuitId(Integer circuitId){
-        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
-        if (circuit == null) return null;
+        Pair<CircuitSummaryDto, List<Race>> dataPair = loadCircuit(circuitId);
+        if(dataPair == null) return null;
+        CircuitSummaryDto circuitSummaryDto = dataPair.getFirst();
+        List<Race> raceList = dataPair.getSecond();
 
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
             String averageRaceTime = racingService.getAverageRaceTime(race.getId());
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
@@ -84,11 +81,11 @@ public class CircuitServiceImpl implements CircuitService {
 
     @Override
     public CircuitSummaryDto getAllPitstopsByCircuitId(Integer circuitId){
-        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
-        if (circuit == null) return null;
+        Pair<CircuitSummaryDto, List<Race>> dataPair = loadCircuit(circuitId);
+        if(dataPair == null) return null;
+        CircuitSummaryDto circuitSummaryDto = dataPair.getFirst();
+        List<Race> raceList = dataPair.getSecond();
 
-        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
-        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
         for (Race race : raceList) {
             Map<Integer, Long> pitstopsMap = racingService.getPitstopsCountByLapForRace(race.getId()) ;
             RaceSummaryDto raceDto = new RaceSummaryDto(race.getId(), race.getName(), race.getYear().getId());
@@ -106,8 +103,17 @@ public class CircuitServiceImpl implements CircuitService {
     @Override
     public int deleteCircuit(Integer circuitId) {
         Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
-        if (circuit == null) return 400;
+        if (circuit == null) return 404;
         circuitRepository.deleteById(circuitId);
         return 200;
+    }
+
+    private Pair<CircuitSummaryDto, List<Race>> loadCircuit(Integer circuitId) {
+        Circuit circuit = circuitRepository.findById(circuitId).orElse(null);
+        if (circuit == null) return null;
+
+        List<Race> raceList = raceRepository.getByCircuitId(circuitId);
+        CircuitSummaryDto circuitSummaryDto = new CircuitSummaryDto(circuitId, circuit.getName(), circuit.getCircuitRef(), circuit.getLocation(), circuit.getCountry());
+        return Pair.of(circuitSummaryDto, raceList);
     }
 }
