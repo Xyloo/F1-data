@@ -1,7 +1,7 @@
 package pl.pollub.f1data.Models.Data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,22 +16,25 @@ public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "resultId", nullable = false)
+    @JsonProperty("resultId")
     private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "raceId", nullable = false)
+    @JsonBackReference(value = "race-result")
     private Race race;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "driverId", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference(value = "driver-result")
     private Driver driver;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "constructorId", nullable = false)
+    @JsonBackReference(value = "constructor-result")
     private Constructor constructor;
 
     @Column(name = "number")
@@ -85,6 +88,7 @@ public class Result {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "statusId", nullable = false)
+    @JsonBackReference(value = "status-result")
     private Status status;
 
 }

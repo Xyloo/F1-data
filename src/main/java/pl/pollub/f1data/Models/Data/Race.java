@@ -1,6 +1,6 @@
 package pl.pollub.f1data.Models.Data;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,11 +22,13 @@ public class Race {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "raceId", nullable = false)
+    @JsonProperty("raceId")
     private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "year", nullable = false)
+    @JsonBackReference(value = "race-year")
     private Season year;
 
     @NotNull
@@ -36,7 +38,7 @@ public class Race {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "circuitId", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference(value = "circuit-race")
     private Circuit circuit;
 
     @Size(max = 255)
@@ -86,27 +88,35 @@ public class Race {
     private LocalTime sprintTime;
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-constructorresult")
     private Set<Constructorresult> constructorresults = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-constructorstanding")
     private Set<Constructorstanding> constructorstandings = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-driverstanding")
     private Set<Driverstanding> driverstandings = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-laptime")
     private Set<Laptime> laptimes = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-pitstop")
     private Set<Pitstop> pitstops = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-qualifying")
     private Set<Qualifying> qualifyings = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-result")
     private Set<Result> results = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "race")
+    @JsonManagedReference(value = "race-sprintresult")
     private Set<Sprintresult> sprintresults = new LinkedHashSet<>();
 
 }

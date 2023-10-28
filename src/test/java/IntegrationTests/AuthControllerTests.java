@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AuthControllerIntegrationTests {
+class AuthControllerTests {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,6 +36,8 @@ class AuthControllerIntegrationTests {
 
     @BeforeEach
     public void setup() {
+        //I couldn't find a better workaround to bypass the @JsonIgnore annotation on password field
+        //which has to be done so that the password is serialized to JSON
         JacksonTester.initFields(this, JsonMapper.builder().disable(MapperFeature.USE_ANNOTATIONS).build());
     }
 

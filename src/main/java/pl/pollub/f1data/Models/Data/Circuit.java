@@ -1,6 +1,6 @@
 package pl.pollub.f1data.Models.Data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,6 +20,7 @@ public class Circuit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "circuitId", nullable = false)
+    @JsonProperty("circuitId")
     private Integer id;
 
     @Size(max = 255)
@@ -55,7 +56,7 @@ public class Circuit {
     private String url;
 
     @OneToMany(mappedBy = "circuit")
-    @JsonBackReference
+    @JsonManagedReference(value = "circuit-race")
     private Set<Race> races = new LinkedHashSet<>();
 
 }
