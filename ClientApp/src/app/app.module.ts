@@ -17,17 +17,18 @@ import { TokenInterceptor } from './interceptors/token-interceptor';
 import { CircuitListComponent } from './circuit-list/circuit-list.component';
 import { CircuitDetailsComponent } from './circuit-details/circuit-details.component';
 
-
 @NgModule({
   declarations: [
-    AppComponent,
-    NavMenuComponent,
-    HomeComponent,
-    LoginComponent,
-    RegisterComponent,
-    LoadingAnimationComponent,
-    CircuitListComponent,
-    CircuitDetailsComponent
+
+      AppComponent,
+      NavMenuComponent,
+      HomeComponent,
+      LoginComponent,
+      RegisterComponent,
+      LoadingAnimationComponent,
+      CircuitListComponent,
+      CircuitDetailsComponent,
+
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -41,6 +42,7 @@ import { CircuitDetailsComponent } from './circuit-details/circuit-details.compo
         { path: 'register', component: RegisterComponent },
         { path: 'circuits', component: CircuitListComponent },
         { path: 'circuits/:id', component: CircuitDetailsComponent },
+        { path: 'circuits/:id', component: CircuitDetailsComponent }
     ])
   ],
   providers: [

@@ -30,7 +30,8 @@
         <h5 *ngIf="averageLapTime!=='NaN:NaN.NaN'">Average overall lap time: {{averageLapTime}}</h5>
         <h4 *ngIf="bestLapTime==='0:00.000'">Best lap time ever: No data available</h4>
         <h5 *ngIf="averageLapTime==='NaN:NaN.NaN'">Average overall lap time: No data available</h5>
-        <canvas id="pitstopChart">{{chart}}</canvas>
+        <canvas style="background-color: white" id="pitstopChart">{{chart}}</canvas>
+
     </div>
 </div>
 <div *ngIf="!circuit">
