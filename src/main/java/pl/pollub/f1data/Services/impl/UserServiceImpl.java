@@ -3,6 +3,7 @@ package pl.pollub.f1data.Services.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -122,7 +123,7 @@ public class UserServiceImpl implements UserService {
     public CompletableFuture<ResponseEntity<?>> deleteUser(Long id) {
         User user = userRepository.getUserById(id).join().orElse(null);
         if(user == null) {
-            return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("User not found."));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found."));
         }
         userRepository.delete(user);
         return CompletableFuture.completedFuture(ResponseEntity.ok("User deleted successfully."));
