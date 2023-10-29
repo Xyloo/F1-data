@@ -79,7 +79,7 @@ public class CircuitControllerTests {
                     get("/api/circuits/" + invalidId)
             ).andReturn().getResponse();
             //then
-            assertThat(response.getStatus(), equalTo(500));
+            assertThat(response.getStatus(), equalTo(400));
         }
     }
 

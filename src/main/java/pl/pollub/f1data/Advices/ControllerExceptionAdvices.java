@@ -84,9 +84,9 @@ public class ControllerExceptionAdvices {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Error: " + ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
 }

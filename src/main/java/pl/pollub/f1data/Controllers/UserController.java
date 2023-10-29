@@ -9,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import pl.pollub.f1data.Exceptions.EmailExistsException;
+import pl.pollub.f1data.Exceptions.UsernameExistsException;
 import pl.pollub.f1data.Models.JsonViews.Views;
 import pl.pollub.f1data.Models.MessageResponse;
 import pl.pollub.f1data.Models.User;
@@ -25,6 +28,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -84,16 +90,41 @@ public class UserController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @JsonView(Views.Internal.class)
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User newUser) {
         User userToUpdate = userService.getUserByIdOrUsername(id).join().orElse(null);
         if(userToUpdate == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: No user found with id or username " + id + "."));
-        if(newUser.getUsername() != null)
+        if(newUser.getUsername() != null) {
+            if(newUser.getUsername().length() < 3 || newUser.getUsername().length() > 20)
+                throw new IllegalArgumentException("Username must be between 3 and 20 characters long.");
+            if(!newUser.getUsername().matches("^[a-zA-Z0-9-_]*$"))
+                throw new IllegalArgumentException("Username can only contain letters, numbers, dashes and underscores.");
+            if(newUser.getUsername().isBlank())
+                throw new IllegalArgumentException("Username cannot be blank.");
+            UserDetailsImpl usernameExistsCheck = (UserDetailsImpl) userService.getUserByUsername(newUser.getUsername()).join().orElse(null);
+            if(usernameExistsCheck != null && !usernameExistsCheck.getId().equals(userToUpdate.getId()))
+                throw new UsernameExistsException();
             userToUpdate.setUsername(newUser.getUsername());
-        if(newUser.getEmail() != null)
+        }
+        if(newUser.getEmail() != null) {
+            if(newUser.getEmail().length() > 100)
+                throw new IllegalArgumentException("Email must be less than 100 characters long.");
+            if(newUser.getEmail().isBlank())
+                throw new IllegalArgumentException("Email cannot be blank.");
+            for (User u : userService.getUsers().join()) {
+                if(u.getEmail().equals(newUser.getEmail()) && !u.getId().equals(userToUpdate.getId()))
+                    throw new EmailExistsException();
+            }
             userToUpdate.setEmail(newUser.getEmail());
-        if(newUser.getPassword() != null)
-            userToUpdate.setPassword(newUser.getPassword());
+        }
+        if(newUser.getPassword() != null) {
+            if(newUser.getPassword().length() < 6 || newUser.getPassword().length() > 100)
+                throw new IllegalArgumentException("Password must be between 6 and 100 characters long.");
+            if(newUser.getPassword().isBlank())
+                throw new IllegalArgumentException("Password cannot be blank.");
+            userToUpdate.setPassword(encoder.encode(newUser.getPassword()));
+        }
         if(newUser.getRoles() != null)
             userToUpdate.setRoles(newUser.getRoles());
         User result = userService.updateUser(userToUpdate).join().orElse(null);
