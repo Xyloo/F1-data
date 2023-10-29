@@ -53,17 +53,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Async
     public CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId, Long requestUserId) {
-        User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
+        User user = null;
         User requestUser = userRepository.getUserById(requestUserId).join().orElse(null);
 
-        if (user == null) {
-            try {
-                user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
-            } catch (NumberFormatException ignored) {
-            }
-            if (user == null) {
-                return CompletableFuture.completedFuture(Optional.empty());
-            }
+        try {
+            user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
+        } catch (NumberFormatException ignored) {}
+
+        if(user == null) {
+            user = userRepository.getUserByUsername(queriedId).join().orElse(null);
+        }
+
+        if(user == null) {
+            return CompletableFuture.completedFuture(Optional.empty());
         }
 
         //basically - return email only when user is admin or when user is requesting his own data
