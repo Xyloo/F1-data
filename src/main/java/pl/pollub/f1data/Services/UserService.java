@@ -10,11 +10,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserService extends UserDetailsService {
-    CompletableFuture<Optional<UserDetails>> GetUserByUsername(String username);
-    CompletableFuture<Optional<UserDetails>> GetUserById(Long id);
-    CompletableFuture<List<User>> GetUsers();
-    CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId, Long requestUserId);
-    CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId);
-    CompletableFuture<Optional<User>> UpdateUser(User user);
-    CompletableFuture<ResponseEntity<?>> DeleteUser(Long id);
+    CompletableFuture<Optional<UserDetails>> getUserByUsername(String username);
+    CompletableFuture<Optional<UserDetails>> getUserById(Long id);
+    CompletableFuture<List<User>> getUsers();
+    CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId, Long requestUserId);
+    CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId);
+    CompletableFuture<Optional<User>> updateUser(User user);
+    CompletableFuture<ResponseEntity<?>> deleteUser(Long id);
 }

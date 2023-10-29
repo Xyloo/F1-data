@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Async
-    public CompletableFuture<Optional<UserDetails>> GetUserByUsername(String username) {
+    public CompletableFuture<Optional<UserDetails>> getUserByUsername(String username) {
         User user = userRepository.getUserByUsername(username).join().orElse(null);
         if (user == null) {
             return CompletableFuture.completedFuture(Optional.empty());
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Async
-    public CompletableFuture<Optional<UserDetails>> GetUserById(Long id) {
+    public CompletableFuture<Optional<UserDetails>> getUserById(Long id) {
         User user = userRepository.getUserById(id).join().orElse(null);
         if (user == null) {
             return CompletableFuture.completedFuture(Optional.empty());
@@ -46,13 +46,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Async
-    public CompletableFuture<List<User>> GetUsers() {
+    public CompletableFuture<List<User>> getUsers() {
         List<User> users = userRepository.findAll();
         return CompletableFuture.completedFuture(users);
     }
     @Override
     @Async
-    public CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId, Long requestUserId) {
+    public CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId, Long requestUserId) {
         User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
         User requestUser = userRepository.getUserById(requestUserId).join().orElse(null);
 
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Async
     //this should be used only by admins
-    public CompletableFuture<Optional<User>> GetUserByIdOrUsername(String queriedId) {
+    public CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId) {
         User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
 
         if (user == null) {
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Async
     //we assume new user data is valid
-    public CompletableFuture<Optional<User>> UpdateUser(User user) {
+    public CompletableFuture<Optional<User>> updateUser(User user) {
         User userToUpdate = userRepository.getUserById(user.getId()).join().orElse(null);
         if(userToUpdate == null) {
             return CompletableFuture.completedFuture(Optional.empty());
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Async
-    public CompletableFuture<ResponseEntity<?>> DeleteUser(Long id) {
+    public CompletableFuture<ResponseEntity<?>> deleteUser(Long id) {
         User user = userRepository.getUserById(id).join().orElse(null);
         if(user == null) {
             return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("User not found."));

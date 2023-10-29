@@ -4,6 +4,7 @@ package pl.pollub.f1data.Controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,11 +33,11 @@ public class UserController {
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getUsers() {
-        List<User> users = userService.GetUsers().join();
+        List<User> users = userService.getUsers().join();
         if(users == null)
-            return ResponseEntity.badRequest().body(new MessageResponse("Could not get users."));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Error: Could not get users."));
         if(users.isEmpty())
-            return ResponseEntity.ok(new MessageResponse("No users found."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: No users found."));
         return ResponseEntity.ok(users);
     }
 
@@ -51,9 +52,9 @@ public class UserController {
     public ResponseEntity<?> getUserByIdOrUsername(@PathVariable String id, @AuthenticationPrincipal UserDetailsImpl requestingUser) {
         //this can be null if user is not logged in - which we permit on this endpoint
         Long requestingUserId = requestingUser != null ? requestingUser.getId() : null;
-        User user = userService.GetUserByIdOrUsername(id, requestingUserId).join().orElse(null);
+        User user = userService.getUserByIdOrUsername(id, requestingUserId).join().orElse(null);
         if(user == null)
-            return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + id + "."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("No user found with id or username " + id + "."));
         return ResponseEntity.ok(user);
     }
 
@@ -66,10 +67,10 @@ public class UserController {
     public ResponseEntity<?> getMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {
         Long userId = requestingUser != null ? requestingUser.getId() : null;
         if(userId == null)
-            return ResponseEntity.badRequest().body(new MessageResponse("User not logged in."));
-        User user = userService.GetUserByIdOrUsername(userId.toString()).join().orElse(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Error: User not logged in."));
+        User user = userService.getUserByIdOrUsername(userId.toString()).join().orElse(null);
         if(user == null)
-            return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + userId + "."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: No user found with id or username " + userId + "."));
         return ResponseEntity.ok(user);
     }
 
@@ -82,7 +83,7 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User newUser) {
-        User userToUpdate = userService.GetUserByIdOrUsername(id).join().orElse(null);
+        User userToUpdate = userService.getUserByIdOrUsername(id).join().orElse(null);
         if(userToUpdate == null)
             return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + id + "."));
         if(newUser.getUsername() != null)
@@ -93,7 +94,7 @@ public class UserController {
             userToUpdate.setPassword(newUser.getPassword());
         if(newUser.getRoles() != null)
             userToUpdate.setRoles(newUser.getRoles());
-        User result = userService.UpdateUser(userToUpdate).join().orElse(null);
+        User result = userService.updateUser(userToUpdate).join().orElse(null);
         if(result == null)
             return ResponseEntity.badRequest().body(new MessageResponse("Could not update user. Check if data is valid."));
         return ResponseEntity.ok(new MessageResponse("User updated successfully."));
@@ -121,10 +122,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
-        User userToDelete = userService.GetUserByIdOrUsername(id).join().orElse(null);
+        User userToDelete = userService.getUserByIdOrUsername(id).join().orElse(null);
         if(userToDelete == null)
             return ResponseEntity.badRequest().body(new MessageResponse("No user found with id or username " + id + "."));
-        return userService.DeleteUser(userToDelete.getId()).join();
+        return userService.deleteUser(userToDelete.getId()).join();
     }
 
     /**
