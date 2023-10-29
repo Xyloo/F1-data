@@ -1,7 +1,7 @@
 package pl.pollub.f1data.Models.Data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,6 +22,7 @@ public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "driverId", nullable = false)
+    @JsonProperty("driverId")
     private Integer id;
 
     @Size(max = 255)
@@ -58,27 +59,27 @@ public class Driver {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @JsonBackReference
+    @JsonManagedReference("driver-driverstanding")
     @OneToMany(mappedBy = "driver")
     private Set<Driverstanding> driverstandings = new LinkedHashSet<>();
 
-    @JsonBackReference
+    @JsonManagedReference("driver-laptime")
     @OneToMany(mappedBy = "driver")
     private Set<Laptime> laptimes = new LinkedHashSet<>();
 
-    @JsonBackReference
+    @JsonManagedReference("driver-pitstop")
     @OneToMany(mappedBy = "driver")
     private Set<Pitstop> pitstops = new LinkedHashSet<>();
 
-    @JsonBackReference
+    @JsonManagedReference("driver-qualifying")
     @OneToMany(mappedBy = "driver")
     private Set<Qualifying> qualifyings = new LinkedHashSet<>();
 
-    @JsonBackReference
+    @JsonManagedReference("driver-result")
     @OneToMany(mappedBy = "driver")
     private Set<Result> results = new LinkedHashSet<>();
 
-    @JsonBackReference
+    @JsonManagedReference("driver-sprintresult")
     @OneToMany(mappedBy = "driver")
     private Set<Sprintresult> sprintresults = new LinkedHashSet<>();
 

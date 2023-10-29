@@ -1,7 +1,7 @@
 package pl.pollub.f1data.Models.Data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,23 +16,25 @@ public class Qualifying {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qualifyId", nullable = false)
+    @JsonProperty("qualifyId")
     private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "raceId", nullable = false)
+    @JsonBackReference(value = "race-qualifying")
     private Race race;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "driverId", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference(value = "driver-qualifying")
     private Driver driver;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "constructorId", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference(value = "constructor-qualifying")
     private Constructor constructor;
 
     @NotNull

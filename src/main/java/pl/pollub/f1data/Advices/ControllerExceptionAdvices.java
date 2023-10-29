@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,33 +18,31 @@ import pl.pollub.f1data.Exceptions.UserNotFoundException;
 import pl.pollub.f1data.Exceptions.UsernameExistsException;
 import pl.pollub.f1data.Models.MessageResponse;
 
-import java.nio.file.AccessDeniedException;
-
 @ControllerAdvice
-public class UserControllerAdvices {
+public class ControllerExceptionAdvices {
 
     @ExceptionHandler(EmailExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<?>  handleEmailExistsException(EmailExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<?>  handleInvalidPasswordException(InvalidPasswordException ex) {
-        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(UsernameExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<?>  handleUsernameExistsException(UsernameExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?>  handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(TransactionSystemException.class)
@@ -57,13 +56,13 @@ public class UserControllerAdvices {
             }
             return ResponseEntity.badRequest().body(new MessageResponse("Error: " + message));
         }
-        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        return ResponseEntity.badRequest().body(new MessageResponse("Error: Duplicate entry. Username or email already exists."));
+        return ResponseEntity.badRequest().body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -85,9 +84,9 @@ public class UserControllerAdvices {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Error: " + ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Error: " + ex.getMessage()));
     }
 
 }

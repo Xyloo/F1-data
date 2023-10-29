@@ -5,8 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import pl.pollub.f1data.Models.DTOs.ConstructorResultsDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorYearSummaryDto;
 import pl.pollub.f1data.Models.Data.Constructor;
-import org.springframework.data.jpa.repository.JpaRepository;
-import pl.pollub.f1data.Models.Data.Constructor;
+
 import java.util.List;
 
 public interface ConstructorRepository extends JpaRepository<Constructor, Integer> {

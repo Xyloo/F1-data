@@ -1,5 +1,7 @@
 package pl.pollub.f1data.Models.Data;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,6 +20,7 @@ import java.util.Set;
 public class Season {
     @Id
     @Column(name = "year", nullable = false)
+    @JsonProperty("year")
     private Integer id;
 
     @Size(max = 255)
@@ -26,6 +29,13 @@ public class Season {
     private String url;
 
     @OneToMany(mappedBy = "year")
+    @JsonManagedReference(value = "race-year")
     private Set<Race> races = new LinkedHashSet<>();
 
+    public Season(int year) {
+        this.id = year;
+    }
+
+    public Season() {
+    }
 }
