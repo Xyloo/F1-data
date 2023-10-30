@@ -9,6 +9,9 @@ import lombok.Setter;
 
 import java.time.LocalTime;
 
+/**
+ * Pitstop entity
+ */
 @Getter
 @Setter
 @Entity

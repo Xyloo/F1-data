@@ -19,6 +19,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Implementation of {@link UserService}
+ */
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired

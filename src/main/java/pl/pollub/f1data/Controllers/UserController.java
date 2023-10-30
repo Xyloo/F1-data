@@ -21,6 +21,9 @@ import pl.pollub.f1data.Services.impl.UserDetailsImpl;
 
 import java.util.List;
 
+/**
+ * This class is responsible for handling requests related to users, such as getting, updating and deleting users.
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/user")
@@ -35,8 +38,10 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /**
-     * @return HTTP 200 with list of users if there are any, HTTP 404 if there are no users (which should never happen), HTTP 500 if there was an error (which also should never happen unless the DB is borked)
-     * @apiNote This endpoint is only accessible by users with ADMIN role. It returns a list of all users.
+     * This endpoint returns all users and is only accessible by users with admin role.
+     * @return <p>• HTTP 200 with list of users if there are any</p>
+     * <p>• HTTP 404 if there are no users (which should never happen)</p>
+     * <p>• HTTP 500 if there was an error (which also should never happen unless the DB is broken)</p>
      */
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
@@ -51,10 +56,12 @@ public class UserController {
 
 
     /**
-     * @param id - can be either id or username
-     * @param requestingUser - user that is requesting the data, added by Spring Security
-     * @return HTTP 200 with user data if user is found, otherwise error message with HTTP 404
-     * @apiNote This endpoint is public, so it can be accessed without logging in. It returns data of a user with given id or username. Email is only returned if user is requesting his own data or an admin is requesting the data.
+     * This endpoint returns data of a user with given id or username and is public.
+     * It can be accessed without logging in. Email is only returned if user is requesting his own data or an admin is requesting the data.
+     * @param id can be either id or username
+     * @param requestingUser user that is requesting the data, added by Spring Security
+     * @return <p>• HTTP 200 with user data if user is found</p>
+     * <p>• HTTP 404 if user was not found</p>
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserByIdOrUsername(@PathVariable String id, @AuthenticationPrincipal UserDetailsImpl requestingUser) {
@@ -67,9 +74,12 @@ public class UserController {
     }
 
     /**
-     * @param requestingUser - user that is requesting the data, added by Spring Security
-     * @return HTTP 200 with user data if user is found, otherwise error message with HTTP 404 if no user found, or HTTP 401 if user is not logged in
-     * @apiNote This endpoint returns data of the user that is currently logged in.
+     * This endpoint returns data of the user that is currently logged in.
+     * @param requestingUser user that is requesting the data, added by Spring Security
+     * @return <p>• HTTP 200 with user data if user is found</p>
+     * <p>• HTTP 401 if user is not logged in</p>
+     * <p>• HTTP 404 if user was not found (which should never happen)</p>
+     * @see UserController#getUserByIdOrUsername(String, UserDetailsImpl)
      */
     @GetMapping("/me")
     public ResponseEntity<?> getMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {
@@ -83,10 +93,11 @@ public class UserController {
     }
 
     /**
-     * @param id - can be either id or username
-     * @param newUser - new user data
-     * @return HTTP 200 with user data if user is found and update was successful, otherwise error message with HTTP 400 or 404 if user was not found
-     * @apiNote This endpoint is only accessible by users with ADMIN role. It updates data of a user with given id or username with data provided in request body.
+     * This endpoint updates data of a user with given id or username with data provided in request body and is only accessible by users with admin role.
+     * @param id can be either id or username
+     * @param newUser new user data
+     * @return <p>• HTTP 200 with message if user is found and update was successful</p>
+     * <p>• HTTP 401 if user is not logged in</p>
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -134,10 +145,14 @@ public class UserController {
     }
 
     /**
-     * @param newUser - new user data
-     * @param requestingUser - user that is requesting the data, added by Spring Security
-     * @return HTTP 200 with user data if user is found and update was successful, otherwise HTTP 401 if user is not logged in, 404 if user was not found (which should never happen), or 400 if update was unsuccessful
-     * @apiNote This endpoint updates data of the currently signed-in user.
+     * This endpoint updates data of the currently signed-in user.
+     * @param newUser new user data
+     * @param requestingUser user that is requesting the data, added by Spring Security
+     * @return <p>• HTTP 200 with message if user is found and update was successful</p>
+     * <p>• HTTP 401 if user is not logged in</p>
+     * <p>• HTTP 404 if user was not found (which should never happen)</p>
+     * <p>• HTTP 400 if data is invalid</p>
+     * @see UserController#updateUser(String, User)
      */
     @PutMapping("/me")
     @JsonView(Views.Internal.class)
@@ -152,9 +167,11 @@ public class UserController {
     }
 
     /**
-     * @param id - can be either id or username
-     * @return HTTP 200 with message if user is found and delete was successful, otherwise HTTP 404 error if user was not found
-     * @apiNote This endpoint is only accessible by users with ADMIN role. It deletes a user (anyone, including themselves) with given id or username.
+     * This endpoint deletes a user <b>(anyone, including themselves)</b> with given id or username and is only accessible by users with admin role.
+     * @param id can be either id or username
+     * @return <p>• HTTP 200 with message if user is found and delete was successful</p>
+     * <p>• HTTP 401 if user is not logged in</p>
+     * <p>• HTTP 404 if user was not found</p>
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -166,9 +183,11 @@ public class UserController {
     }
 
     /**
-     * @param requestingUser - user that is requesting the data, added by Spring Security
-     * @return HTTP 200 with message if user is found and delete was successful, otherwise HTTP 401 if user is not logged in
-     * @apiNote This endpoint deletes the currently signed-in user, even admins.
+     * This endpoint deletes the currently signed-in user, <b>even admins.</b>
+     * @param requestingUser user that is requesting the data, added by Spring Security
+     * @return <p>• HTTP 200 with message if user is found and delete was successful</p>
+     * <p>• HTTP 401 if user is not logged in</p>
+     * @see UserController#deleteUser(String)
      */
     @DeleteMapping("/me")
     public ResponseEntity<?> deleteMe(@AuthenticationPrincipal UserDetailsImpl requestingUser) {

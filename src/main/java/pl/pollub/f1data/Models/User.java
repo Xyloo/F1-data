@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * User entity
+ */
 @Entity
 @Getter
 @Setter
@@ -54,6 +57,12 @@ public class User {
     @JsonView(Views.Internal.class)
     private Set<Role> roles = new HashSet<>();
 
+    /**
+     * Constructor
+     * @param username username
+     * @param email email
+     * @param password password
+     */
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;

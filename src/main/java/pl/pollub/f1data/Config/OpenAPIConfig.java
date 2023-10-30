@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+/**
+ * Configuration class for OpenAPI and Swagger
+ */
 @Configuration
 public class OpenAPIConfig {
 
@@ -22,6 +25,13 @@ public class OpenAPIConfig {
 
     //Swagger UI URL: http://localhost:8080/swagger-ui/index.html
     //Swagger API URL: http://localhost:8080/v3/api-docs
+
+    /**
+     * This method configures OpenAPI and Swagger.
+     * This is used by Spring to generate OpenAPI specification.
+     * @see <a href="https://swagger.io/docs/specification/about/">Swagger Specification</a>
+     * @return OpenAPI object
+     */
     @Bean
     public OpenAPI f1OpenAPIConfig() {
         Server devServer = new Server();

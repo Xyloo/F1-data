@@ -15,6 +15,9 @@ import pl.pollub.f1data.Services.RaceService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of {@link RaceService}
+ */
 @Service
 public class RaceServiceImpl implements RaceService {
 

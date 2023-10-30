@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Circuit service implementation
+ */
 @Service
 public class CircuitServiceImpl implements CircuitService {
     @Autowired

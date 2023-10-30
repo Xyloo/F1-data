@@ -15,6 +15,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import pl.pollub.f1data.Services.impl.UserServiceImpl;
 
+/**
+ * Security and authentication configuration
+ */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig{
@@ -24,11 +27,22 @@ public class SecurityConfig{
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
+    /**
+     * This method creates a new {@link AuthTokenFilter}
+     * This filter is used to authenticate users. It is a part of the authentication process.
+     * @return {@link AuthTokenFilter}
+     */
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
+    /**
+     * This method creates a new {@link DaoAuthenticationProvider}
+     * It is configured to use {@link UserServiceImpl} as a user details service and {@link BCryptPasswordEncoder} as a password encoder.
+     * It is a part of the authentication process.
+     * @return {@link DaoAuthenticationProvider}
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -37,11 +51,23 @@ public class SecurityConfig{
         return provider;
     }
 
+    /**
+     * This method creates a new {@link AuthenticationManager}
+     * It is a part of the authentication process.
+     * @param authConfig {@link AuthenticationConfiguration}
+     * @return {@link AuthenticationManager}
+     * @throws Exception if authentication manager cannot be created
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    /**
+     * This method creates a new {@link BCryptPasswordEncoder}
+     * It is essential for security - it hashes passwords.
+     * @return {@link BCryptPasswordEncoder}
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Season entity
+ */
 @Getter
 @Setter
 @Entity
@@ -32,10 +35,17 @@ public class Season {
     @JsonManagedReference(value = "race-year")
     private Set<Race> races = new LinkedHashSet<>();
 
+    /**
+     * Constructor
+     * @param year year
+     */
     public Season(int year) {
         this.id = year;
     }
 
+    /**
+     * Parameterless constructor for JPA
+     */
     public Season() {
     }
 }

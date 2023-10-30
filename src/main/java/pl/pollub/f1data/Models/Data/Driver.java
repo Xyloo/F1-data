@@ -12,6 +12,10 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Driver entity
+
+ */
 @Getter
 @Setter
 @Entity

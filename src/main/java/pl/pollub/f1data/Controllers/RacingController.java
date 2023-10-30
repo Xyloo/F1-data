@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.pollub.f1data.Models.DTOs.DriverBestTimeDto;
 import pl.pollub.f1data.Services.RacingService;
-import pl.pollub.f1data.Models.DTOs.CircuitSummaryDto;
 
+/**
+ * This class is responsible for handling requests related to racing.
+ */
 @RestController
 @RequestMapping("api/racing")
 public class RacingController {
@@ -17,6 +19,12 @@ public class RacingController {
     @Autowired
     RacingService racingService;
 
+    /**
+     * This endpoint returns the best time and driver in a given race.
+     * @param raceId race id
+     * @return <p>• HTTP 200 with {@link DriverBestTimeDto} response</p>
+     * <p>• HTTP 404 if no data was found for given race id (or race id does not exist)</p>
+     */
     @GetMapping("/{raceId}/best-time")
     public ResponseEntity<DriverBestTimeDto> getBestRaceTimeByRaceId(@PathVariable Integer raceId) {
         DriverBestTimeDto bestTime = racingService.getBestRaceTimeByRaceId(raceId).orElse(null);
@@ -27,6 +35,12 @@ public class RacingController {
         }
     }
 
+    /**
+     * This endpoint returns the average time of all drivers in a given race.
+     * @param raceId race id
+     * @return <p>• HTTP 200 with race's average time as String</p>
+     * <p>• HTTP 404 if no data was found for given race id (or race id does not exist)</p>
+     */
     @GetMapping("/{raceId}/average-time")
     public ResponseEntity<String> getAverageRaceTime(@PathVariable Integer raceId) {
         String averageTime = racingService.getAverageRaceTime(raceId);
@@ -37,38 +51,15 @@ public class RacingController {
         }
     }
 
+    /**
+     * This endpoint returns the pitstop map (lap, pitstop count) in a given race.
+     * @param raceId race id
+     * @return <p>• HTTP 200 with pitstop map</p>
+     * <p>• HTTP 404 if no data was found for given race id (or race id does not exist)</p>
+     */
     @GetMapping("/{raceId}/pitstops")
     public ResponseEntity<?> getPitstopsCountByLapForRace(@PathVariable Integer raceId) {
         return ResponseEntity.ok(racingService.getPitstopsCountByLapForRace(raceId));
     }
 
-    @GetMapping("/{circuitId}/summary/best-times")
-    public ResponseEntity<CircuitSummaryDto> getBestRaceTimesByCircuit(@PathVariable Integer circuitId) {
-        CircuitSummaryDto circuitSummary = racingService.getBestRaceTimesByCircuitId(circuitId);
-        if (circuitSummary != null) {
-            return ResponseEntity.ok(circuitSummary);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/{circuitId}/summary/average-lap-times")
-    public ResponseEntity<CircuitSummaryDto> getAverageRaceTimesByCircuit(@PathVariable Integer circuitId) {
-        CircuitSummaryDto circuitSummary = racingService.getAverageTimeByCircuitId(circuitId);
-        if (circuitSummary != null) {
-            return ResponseEntity.ok(circuitSummary);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/{circuitId}/summary/pitstops")
-    public ResponseEntity<CircuitSummaryDto> getAllPitstopsByCircuit(@PathVariable Integer circuitId) {
-        CircuitSummaryDto circuitSummary = racingService.getAllPitstopsByCircuitId(circuitId);
-        if (circuitSummary != null) {
-            return ResponseEntity.ok(circuitSummary);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

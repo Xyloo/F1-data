@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Generic response object with a message
+ */
 @AllArgsConstructor
 @Getter
 @Setter

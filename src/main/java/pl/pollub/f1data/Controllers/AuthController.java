@@ -32,6 +32,9 @@ import pl.pollub.f1data.Services.impl.UserDetailsImpl;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class is responsible for handling authentication requests, such as login, register (signup) and logout.
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("api/auth")
@@ -49,9 +52,10 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     /**
-     * @param loginUserDTO - username and password
-     * @return HTTP 200 with JWT token if login is successful, otherwise HTTP 401 with message "Invalid username or password."
-     * @apiNote This endpoint is public. It returns a JWT token which users use to authenticate if login is successful.
+     * This endpoint returns a JWT token (which users use to authenticate), if login is successful. It is publicly accessible.
+     * @param loginUserDTO username and password
+     * @return <p>• HTTP 200 with token if authenticated successfully</p>
+     *        <p>• HTTP 400 if authentication failed</p>
      */
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginUserDTO loginUserDTO) {
@@ -67,9 +71,13 @@ public class AuthController {
     }
 
     /**
-     * @param createUserDTO - username, email and password. Username and email must be unique.
-     * @return HTTP 200 with message "User registered successfully!" if registration is successful, otherwise HTTP 400 with message "Username already exists." or "Email already exists."
-     * @apiNote This endpoint is public. It registers a new user or throws an exception if username or email already exists. It does not log the user in.
+     * This endpoint registers a new user or throws an exception if username or email already exists and <b>it does not log the user in.</b> It is publicly accessible.
+     * @param createUserDTO username, email and password. Username and email must be unique.
+     * @return <p>• HTTP 201 if user registered successfully</p>
+     *       <p>• HTTP 400 if username or email already exists</p>
+     *       <p>• HTTP 500 if an error occurred</p>
+     * @exception UsernameExistsException if username already exists
+     * @exception EmailExistsException if email already exists
      */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
@@ -87,11 +95,12 @@ public class AuthController {
     }
 
     /**
-     * @param authentication - user that is requesting the data, added by Spring Security
-     * @param request - request data
-     * @param response - response data
-     * @return HTTP 200 with message "User logged out successfully!" if logout is successful, otherwise HTTP 400 with message "User is not logged in!"
-     * @apiNote This endpoint requires the user to be logged in. It logs the user out by clearing the authentication and deleting all cookies. It does not invalidate the JWT token - it is still valid until it expires.
+     * This endpoint logs the user out by clearing the authentication and deleting all cookies if they are logged in. <b>It does not invalidate the JWT token - it is still valid until it expires.</b>
+     * @param authentication user that is requesting the data, added by Spring Security
+     * @param request request data
+     * @param response response data
+     * @return <p>• HTTP 200 if user logged out successfully</p>
+     *      <p>• HTTP 401 if user is not logged in</p>
      */
     //I am not sure if this works at all...
     @PostMapping("/logout")
