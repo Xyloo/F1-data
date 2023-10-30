@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Status entity (essentially an enum)
+ */
 @Getter
 @Setter
 @Entity

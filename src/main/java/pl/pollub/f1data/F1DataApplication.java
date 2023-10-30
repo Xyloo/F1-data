@@ -15,6 +15,9 @@ import pl.pollub.f1data.Repositories.UserRepository;
 
 import java.util.HashSet;
 
+/**
+ * Main class of the application
+ */
 @SpringBootApplication
 public class F1DataApplication {
     @Autowired
@@ -26,6 +29,10 @@ public class F1DataApplication {
     @Autowired
     private PasswordEncoder encoder;
 
+    /**
+     * Main method that starts the whole application
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(F1DataApplication.class, args);
     }

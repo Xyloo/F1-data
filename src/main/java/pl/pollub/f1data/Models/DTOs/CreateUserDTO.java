@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+/**
+ * Create user data transfer object
+ */
 @Getter
 @Setter
 public class CreateUserDTO {

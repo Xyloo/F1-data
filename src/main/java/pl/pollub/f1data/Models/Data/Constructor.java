@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Constructor entity
+ */
 @Getter
 @Setter
 @Entity

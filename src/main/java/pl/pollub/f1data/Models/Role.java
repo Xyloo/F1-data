@@ -6,6 +6,9 @@ import lombok.*;
 
 import java.util.Objects;
 
+/**
+ * Role entity
+ */
 @Entity
 @Getter
 @Setter
@@ -24,6 +27,10 @@ public class Role {
     @NotNull
     private ERole name;
 
+    /**
+     * Constructor
+     * @param name role name
+     */
     public Role(@NotNull ERole name) {
         this.name = name;
     }

@@ -10,6 +10,9 @@ import pl.pollub.f1data.Services.RaceService;
 
 import java.util.List;
 
+/**
+ * This class is responsible for handling requests related to races.
+ */
 @RestController
 @RequestMapping("api/race")
 public class RaceController {
@@ -17,6 +20,13 @@ public class RaceController {
     @Autowired
     RaceService raceService;
 
+    /**
+     * This endpoint returns all races from a given year.
+     * @param year year
+     * @return <p>• HTTP 200 with list of races</p>
+     * <p>• HTTP 204 if no races found</p>
+     * <p>• HTTP 500 with an error message if an exception happens</p>
+     */
     @GetMapping("/{year}")
     public ResponseEntity<?> getAllRacesByYear(@PathVariable Integer year) {
         try {
@@ -29,6 +39,14 @@ public class RaceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
+
+    /**
+     * This endpoint returns race results for a given race id.
+     * @param raceId race id
+     * @return <p>• HTTP 200 with list of results</p>
+     * <p>• HTTP 204 if no results found</p>
+     * <p>• HTTP 500 with an error message if an exception happens</p>
+     */
     @GetMapping("/{raceId}/results")
     public ResponseEntity<?> getResultsByRaceId(@PathVariable Integer raceId) {
         try {

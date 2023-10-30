@@ -12,6 +12,9 @@ import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Race entity
+ */
 @Getter
 @Setter
 @Entity

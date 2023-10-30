@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.util.Map;
 
+/**
+ * Race summary data transfer object
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +21,12 @@ public class RaceSummaryDto {
     DriverBestTimeDto bestLapTime;
     String averageLapTime;
 
+    /**
+     * Constructor
+     * @param raceId id
+     * @param name race name
+     * @param year race year
+     */
     public RaceSummaryDto(Integer raceId, String name, Integer year) {
         this.raceId = raceId;
         this.name = name;
