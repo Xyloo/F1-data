@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.pollub.f1data.Models.DTOs.ConstructorDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorResultsDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorYearSummaryDto;
 import pl.pollub.f1data.Models.Data.Constructor;
@@ -39,8 +40,8 @@ public class ConstructorController {
      *     <p>• HTTP 404 if there are no constructors</p>
      */
     @GetMapping("/")
-    ResponseEntity<List<Constructor>> getAllConstructors() {
-        List<Constructor> allConstructors = constructorService.getAllConstructors();
+    ResponseEntity<List<ConstructorDto>> getAllConstructors() {
+        List<ConstructorDto> allConstructors = constructorService.getAllConstructors();
         if (allConstructors.isEmpty()) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(allConstructors);
     }
@@ -52,8 +53,8 @@ public class ConstructorController {
      *    <p>• HTTP 404 if there are no constructors</p>
      */
     @GetMapping("/nationality/{nationality}")
-    ResponseEntity<List<Constructor>> getAllConstructorsByNationality(@PathVariable String nationality){
-        List<Constructor> allConstructors = constructorService.getAllConstructorsByNationality(nationality);
+    ResponseEntity<List<ConstructorDto>> getAllConstructorsByNationality(@PathVariable String nationality){
+        List<ConstructorDto> allConstructors = constructorService.getAllConstructorsByNationality(nationality);
         if (allConstructors.isEmpty()) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(allConstructors);
     }

@@ -2,6 +2,7 @@ package pl.pollub.f1data.Services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.pollub.f1data.Models.DTOs.ConstructorDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorResultsDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorYearSummaryDto;
 import pl.pollub.f1data.Models.Data.Constructor;
@@ -26,12 +27,12 @@ public class ConstructorServiceImpl implements ConstructorService {
     }
 
     @Override
-    public List<Constructor> getAllConstructors() {
-        return constructorRepository.findAll();
+    public List<ConstructorDto> getAllConstructors() {
+        return constructorRepository.findAllConstructors();
     }
 
     @Override
-    public List<Constructor> getAllConstructorsByNationality(String nationality) {
+    public List<ConstructorDto> getAllConstructorsByNationality(String nationality) {
         return constructorRepository.findConstructorByNationality(nationality);
     }
 
