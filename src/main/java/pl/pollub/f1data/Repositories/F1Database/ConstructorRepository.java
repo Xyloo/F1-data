@@ -2,6 +2,7 @@ package pl.pollub.f1data.Repositories.F1Database;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import pl.pollub.f1data.Models.DTOs.ConstructorDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorResultsDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorYearSummaryDto;
 import pl.pollub.f1data.Models.Data.Constructor;
@@ -12,12 +13,18 @@ import java.util.List;
  * This interface is responsible for handling queries related to constructors.
  */
 public interface ConstructorRepository extends JpaRepository<Constructor, Integer> {
+
+    //** This method returns a list of constructors with their ids, names, nationalities and urls. */
+    @Query("SELECT new pl.pollub.f1data.Models.DTOs.ConstructorDto(c.id, c.constructorRef, c.name, c.nationality, c.url) FROM Constructor c")
+    List<ConstructorDto> findAllConstructors();
+
     /**
      * This method returns a constructor with a given nationality.
      * @param nationality nationality of the constructor
      * @return list of constructors that satisfy the given nationality, can be empty
      */
-    List<Constructor> findConstructorByNationality(String nationality);
+    @Query("SELECT new pl.pollub.f1data.Models.DTOs.ConstructorDto(c.id, c.constructorRef, c.name, c.nationality, c.url) FROM Constructor c where c.nationality = ?1")
+    List<ConstructorDto> findConstructorByNationality(String nationality);
 
     /**
      * This method returns a list of constructor results for a given constructor and year.

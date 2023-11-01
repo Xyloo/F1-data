@@ -1,5 +1,6 @@
 package pl.pollub.f1data.Services;
 
+import pl.pollub.f1data.Models.DTOs.ConstructorDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorResultsDto;
 import pl.pollub.f1data.Models.DTOs.ConstructorYearSummaryDto;
 import pl.pollub.f1data.Models.Data.Constructor;
@@ -22,14 +23,14 @@ public interface ConstructorService {
      * This method returns all constructors.
      * @return list of constructors, can be empty
      */
-    List<Constructor> getAllConstructors();
+    List<ConstructorDto> getAllConstructors();
 
     /**
      * This method returns all constructors with a given nationality.
      * @param nationality constructor nationality
      * @return list of constructors, can be empty
      */
-    List<Constructor> getAllConstructorsByNationality(String nationality);
+    List<ConstructorDto> getAllConstructorsByNationality(String nationality);
 
     /**
      * This method returns constructor results for a given constructor and year.

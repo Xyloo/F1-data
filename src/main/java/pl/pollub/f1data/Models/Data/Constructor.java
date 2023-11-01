@@ -46,23 +46,23 @@ public class Constructor {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @OneToMany(mappedBy = "constructor")
+    @OneToMany(mappedBy = "constructor", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "constructor-constructorresult")
     private Set<Constructorresult> constructorresults = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "constructor")
+    @OneToMany(mappedBy = "constructor", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "constructor-constructorstanding")
     private Set<Constructorstanding> constructorstandings = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "constructor")
+    @OneToMany(mappedBy = "constructor", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "constructor-qualifying")
     private Set<Qualifying> qualifyings = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "constructor")
+    @OneToMany(mappedBy = "constructor", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "constructor-result")
     private Set<Result> results = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "constructor")
+    @OneToMany(mappedBy = "constructor", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "constructor-sprintresult")
     private Set<Sprintresult> sprintresults = new LinkedHashSet<>();
 
