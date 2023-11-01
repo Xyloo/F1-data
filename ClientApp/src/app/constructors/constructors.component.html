@@ -1,0 +1,17 @@
+<h1 style="margin-bottom: 2rem">Constructors</h1>
+<table *ngIf="constructorData.length">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Nationality</th>
+        <th>URL</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of constructorData">
+        <td><a href="/constructors/{{item.id}}">{{ item.name }}</a></td>
+        <td>{{ item.nationality }}</td>
+        <td><a [href]="item.url" target="_blank">Wikipedia</a></td>
+    </tr>
+    </tbody>
+</table>

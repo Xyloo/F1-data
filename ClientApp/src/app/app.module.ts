@@ -16,6 +16,8 @@ import { AuthGuard } from './auth-guard.service';
 import { TokenInterceptor } from './interceptors/token-interceptor';
 import { CircuitListComponent } from './circuit-list/circuit-list.component';
 import { CircuitDetailsComponent } from './circuit-details/circuit-details.component';
+import { ConstructorsComponent } from './constructors/constructors.component';
+import { ConstructorDetailsComponent } from './constructor-details/constructor-details.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { CircuitDetailsComponent } from './circuit-details/circuit-details.compo
       LoadingAnimationComponent,
       CircuitListComponent,
       CircuitDetailsComponent,
+      ConstructorsComponent,
+      ConstructorDetailsComponent,
 
   ],
   imports: [
@@ -42,7 +46,8 @@ import { CircuitDetailsComponent } from './circuit-details/circuit-details.compo
         { path: 'register', component: RegisterComponent },
         { path: 'circuits', component: CircuitListComponent },
         { path: 'circuits/:id', component: CircuitDetailsComponent },
-        { path: 'circuits/:id', component: CircuitDetailsComponent }
+        { path: 'constructors', component: ConstructorsComponent },
+        { path: 'constructors/:id', component: ConstructorDetailsComponent },
     ])
   ],
   providers: [

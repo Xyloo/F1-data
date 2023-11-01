@@ -1,0 +1,14 @@
+
+
+<div class="container" *ngIf="isData; else noData">
+    <div class="flex-container">
+        <h2 class="constructor-name">{{constructorName}} - Performance over the year</h2>
+    </div>
+</div>
+
+<canvas  [style.visibility]="isData ? 'visible' : 'hidden'" id="constructorChart"></canvas>
+
+<ng-template #noData>
+    <h2>No Data Available for {{ constructorName }}</h2>
+    <p>We couldn't find any performance data for {{ constructorName }} at the moment. Please check back later.</p>
+</ng-template>
