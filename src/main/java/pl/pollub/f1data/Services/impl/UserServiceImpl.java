@@ -1,13 +1,12 @@
 package pl.pollub.f1data.Services.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.pollub.f1data.Exceptions.EmailExistsException;
@@ -29,10 +28,7 @@ import java.util.concurrent.CompletableFuture;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder encoder;
-
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     @Async
@@ -92,16 +88,16 @@ public class UserServiceImpl implements UserService {
     @Async
     //this should be used only by admins
     public CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId) {
-        User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
-
+        User user = null;
+        try {
+            user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
+        } catch (NumberFormatException ignored) {
+        }
         if (user == null) {
-            try {
-                user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
-            } catch (NumberFormatException ignored) {
-            }
-            if (user == null) {
+            user = userRepository.getUserByUsername(queriedId).join().orElse(null);
+        }
+        if (user == null) {
                 return CompletableFuture.completedFuture(Optional.empty());
-            }
         }
         return CompletableFuture.completedFuture(Optional.of(user));
     }

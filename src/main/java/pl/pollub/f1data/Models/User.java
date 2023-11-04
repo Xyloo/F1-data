@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.pollub.f1data.Models.JsonViews.NewUserInfo;
+import pl.pollub.f1data.Models.JsonViews.ValidateUserInfo;
 import pl.pollub.f1data.Models.JsonViews.Views;
 
 import java.util.HashSet;
@@ -33,20 +35,20 @@ public class User {
     @JsonView(Views.Public.class)
     private Long id;
 
-    @NotBlank(message = "Username cannot be blank.", groups = Views.NewUserInfo.class)
-    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters long.", groups = Views.ValidateUserInfo.class)
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9-_]*$", message = "Username can only contain letters, numbers, dashes and underscores. It also cannot start with a number.", groups = Views.ValidateUserInfo.class)
+    @NotBlank(message = "Username cannot be blank.", groups = NewUserInfo.class)
+    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters long.", groups = ValidateUserInfo.class)
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9-_]*$", message = "Username can only contain letters, numbers, dashes and underscores. It also cannot start with a number.", groups = ValidateUserInfo.class)
     @JsonView(Views.Public.class)
     private String username;
 
-    @NotBlank(message = "Email cannot be blank.", groups = Views.NewUserInfo.class)
-    @Size(min = 2, max = 100, message = "Email must be less than 100 characters long.", groups = Views.ValidateUserInfo.class)
-    @Email(message = "Email must be valid.", groups = Views.ValidateUserInfo.class)
+    @NotBlank(message = "Email cannot be blank.", groups = NewUserInfo.class)
+    @Size(min = 2, max = 100, message = "Email must be less than 100 characters long.", groups = ValidateUserInfo.class)
+    @Email(message = "Email must be valid.", groups = ValidateUserInfo.class)
     @JsonView(Views.Public.class)
     private String email;
 
-    @NotBlank(message = "Password cannot be blank.", groups = Views.NewUserInfo.class)
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters long.", groups = Views.ValidateUserInfo.class)
+    @NotBlank(message = "Password cannot be blank.", groups = NewUserInfo.class)
+    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters long.", groups = ValidateUserInfo.class)
     @JsonView(Views.Internal.class)
     private String password;
 

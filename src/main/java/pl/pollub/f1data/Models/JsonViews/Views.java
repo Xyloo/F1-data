@@ -16,15 +16,4 @@ public class Views {
      */
     public static class Internal extends Public {}
 
-    /**
-     * This class allows fields to be null (but not blank).
-     * It is used in updating user info - if a field is not null, it will be updated if it is validated.
-     */
-    public static class ValidateUserInfo {}
-
-    /**
-     * This class is used to validate user input when creating a new user.
-     * It forces fields to not be blank along all the other validation rules.
-     */
-    public static class NewUserInfo extends ValidateUserInfo {}
 }

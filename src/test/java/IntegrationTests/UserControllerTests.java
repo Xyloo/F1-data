@@ -403,7 +403,7 @@ public class UserControllerTests {
                     ).andReturn().getResponse();
                     //then
                     assert response.getStatus() == 400;
-                    assert response.getContentAsString().contains("Error: Username must be between 3 and 20 characters long.");
+                    assert response.getContentAsString().contains("Error: Username must be between 3 and 32 characters long.");
                     //cleanup
                     userRepository.delete(userRepository.getUserById(user.getId()).get().orElseThrow());
                 }
@@ -571,7 +571,7 @@ public class UserControllerTests {
                     ).andReturn().getResponse();
                     //then
                     assert response.getStatus() == 200;
-                    assert !login(user.getUsername(), newPassword).equals("");
+                    assert !login(user.getUsername(), newPassword).isEmpty();
                     //cleanup
                     userRepository.delete(userRepository.getUserById(user.getId()).get().orElseThrow());
                 }
@@ -838,7 +838,7 @@ public class UserControllerTests {
             ).andReturn().getResponse().getContentAsString();
             token = response.substring(response.indexOf(':') + 2, response.indexOf(',') - 1);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         return token;
     }
