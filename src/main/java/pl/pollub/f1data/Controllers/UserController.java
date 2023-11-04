@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.pollub.f1data.Exceptions.EmailExistsException;
 import pl.pollub.f1data.Exceptions.UsernameExistsException;
@@ -102,7 +103,7 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @JsonView(Views.Internal.class)
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User newUser) {
+    public ResponseEntity<?> updateUser(@PathVariable String id, @Validated(Views.ValidateUserInfo.class) @RequestBody User newUser) {
         User userToUpdate = userService.getUserByIdOrUsername(id).join().orElse(null);
         if(userToUpdate == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("Error: No user found with id or username " + id + "."));
@@ -156,7 +157,7 @@ public class UserController {
      */
     @PutMapping("/me")
     @JsonView(Views.Internal.class)
-    public ResponseEntity<?> updateMe(@RequestBody User newUser, @AuthenticationPrincipal UserDetailsImpl requestingUser) {
+    public ResponseEntity<?> updateMe(@Validated(Views.ValidateUserInfo.class) @RequestBody User newUser, @AuthenticationPrincipal UserDetailsImpl requestingUser) {
         Long userId = requestingUser != null ? requestingUser.getId() : null;
         if(userId == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Error: User not logged in."));
