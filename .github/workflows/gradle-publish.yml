@@ -1,11 +1,7 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+# This workflow will build a Java project with Gradle whenever you push a commit to the repository.
+# It will also build the client app.
 
-name: Gradle Package
+name: F1 data application build
 
 env:
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: '2'
@@ -20,7 +16,7 @@ on:
       - master
 
 jobs:
-  build:
+  build-java:
 
     runs-on: ubuntu-latest
     permissions:
@@ -36,7 +32,34 @@ jobs:
         distribution: 'oracle'
         cache: 'gradle'
 
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
-        arguments: build
+        arguments: build -x test
+
+  build-angular:
+    runs-on: ubuntu-latest
+
+    defaults:
+        run:
+            working-directory: ./ClientApp
+
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        node-version: [ 18.x, 20.x ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm run build --if-present
