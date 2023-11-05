@@ -1,14 +1,16 @@
 package pl.pollub.f1data.Services.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.pollub.f1data.Exceptions.EmailExistsException;
+import pl.pollub.f1data.Exceptions.UsernameExistsException;
 import pl.pollub.f1data.Models.ERole;
 import pl.pollub.f1data.Models.User;
 import pl.pollub.f1data.Repositories.UserRepository;
@@ -26,8 +28,7 @@ import java.util.concurrent.CompletableFuture;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
-
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     @Async
@@ -87,16 +88,16 @@ public class UserServiceImpl implements UserService {
     @Async
     //this should be used only by admins
     public CompletableFuture<Optional<User>> getUserByIdOrUsername(String queriedId) {
-        User user = userRepository.getUserByUsername(queriedId).join().orElse(null);
-
+        User user = null;
+        try {
+            user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
+        } catch (NumberFormatException ignored) {
+        }
         if (user == null) {
-            try {
-                user = userRepository.getUserById(Long.parseLong(queriedId)).join().orElse(null);
-            } catch (NumberFormatException ignored) {
-            }
-            if (user == null) {
+            user = userRepository.getUserByUsername(queriedId).join().orElse(null);
+        }
+        if (user == null) {
                 return CompletableFuture.completedFuture(Optional.empty());
-            }
         }
         return CompletableFuture.completedFuture(Optional.of(user));
     }
@@ -116,6 +117,25 @@ public class UserServiceImpl implements UserService {
         User userToUpdate = userRepository.getUserById(user.getId()).join().orElse(null);
         if(userToUpdate == null) {
             return CompletableFuture.completedFuture(Optional.empty());
+        }
+        if(user.getUsername() != null) {
+            UserDetailsImpl usernameExistsCheck = (UserDetailsImpl) getUserByUsername(user.getUsername()).join().orElse(null);
+            if(usernameExistsCheck != null && !usernameExistsCheck.getId().equals(userToUpdate.getId()))
+                throw new UsernameExistsException();
+            userToUpdate.setUsername(user.getUsername());
+        }
+        if(user.getEmail() != null) {
+            for (User u : getUsers().join()) {
+                if(u.getEmail().equals(user.getEmail()) && !u.getId().equals(userToUpdate.getId()))
+                    throw new EmailExistsException();
+            }
+            userToUpdate.setEmail(user.getEmail());
+        }
+        if(user.getPassword() != null) {
+            userToUpdate.setPassword(encoder.encode(user.getPassword()));
+        }
+        if(user.getRoles() != null) {
+            userToUpdate.setRoles(user.getRoles());
         }
         userRepository.save(userToUpdate);
         return CompletableFuture.completedFuture(Optional.of(userToUpdate));

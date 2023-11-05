@@ -15,4 +15,5 @@ public class Views {
      * Internal view for filtering data in json responses.
      */
     public static class Internal extends Public {}
+
 }

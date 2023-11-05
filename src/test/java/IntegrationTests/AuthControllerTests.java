@@ -48,7 +48,7 @@ class AuthControllerTests {
             int randomIndex = (int) (Math.random() * chars.length());
             randomString.append(chars.charAt(randomIndex));
         }
-        return randomString.toString();
+        return "a" + randomString;
     }
 
     @Nested
