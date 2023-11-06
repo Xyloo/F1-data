@@ -1,8 +1,8 @@
-FROM node:18-alpine AS builder
-COPY ./package.json ./package-lock.json ./angular.json ./
+FROM node:20-alpine AS builder
+COPY package.json npm-shrinkwrap.json angular.json .
 RUN npm i && mkdir /ng-app && cp -R ./node_modules ./ng-app
 WORKDIR /ng-app
-COPY ./F1-data/ClientApp .
+COPY . .
 RUN npm run build --prod
 
 FROM nginx:alpine
