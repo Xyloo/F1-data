@@ -1,5 +1,5 @@
 export class CircuitDeserializedModel {
-  public id : number;
+  public circuitId : number;
   public circuitRef: string;
   public name: string;
   public location: string;
@@ -8,8 +8,8 @@ export class CircuitDeserializedModel {
   public lng: number;
   public alt: number;
   public url: string;
-  constructor(id: number, circuitRef: string, name: string, location: string, country: string, lat: number, lng: number, alt: number, url: string) {
-    this.id = id;
+  constructor(circuitId: number, circuitRef: string, name: string, location: string, country: string, lat: number, lng: number, alt: number, url: string) {
+    this.circuitId = circuitId;
     this.circuitRef = circuitRef;
     this.name = name;
     this.location = location;

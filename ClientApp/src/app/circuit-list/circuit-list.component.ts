@@ -18,7 +18,7 @@ export class CircuitListComponent {
     ngOnInit(): void {
       this.http.get<CircuitDeserializedModel[]>('/api/circuits/').subscribe(result => {
         result.map(circuit => {
-          this.circuits.push(new CircuitModel(circuit.id, circuit.name, circuit.location, circuit.country, circuit.url, circuit.lat, circuit.lng));
+          this.circuits.push(new CircuitModel(circuit.circuitId, circuit.name, circuit.location, circuit.country, circuit.url, circuit.lat, circuit.lng));
           this.circuits.sort((a, b) => a.country.localeCompare(b.country));
         })
       })
